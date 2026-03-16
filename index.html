@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root {
+  --bg: #f9f9f9;
+  --surface: #ffffff;
+  --surface2: #f2f2f2;
+  --text: #0f0f0f;
+  --text2: #606060;
+  --border: #e5e5e5;
+  --hover: #f2f2f2;
+  --chip-bg: #0f0f0f;
+  --chip-text: #fff;
+  --chip-inactive: #f2f2f2;
+  --chip-inactive-text: #0f0f0f;
+  --header-bg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #ccc;
+  --red: #ff0000;
+  --shadow: rgba(0,0,0,0.08);
+}
+[data-theme="dark"] {
+  --bg: #0f0f0f;
+  --surface: #212121;
+  --surface2: #272727;
+  --text: #f1f1f1;
+  --text2: #aaaaaa;
+  --border: #303030;
+  --hover: #272727;
+  --chip-bg: #f1f1f1;
+  --chip-text: #0f0f0f;
+  --chip-inactive: #272727;
+  --chip-inactive-text: #f1f1f1;
+  --header-bg: #0f0f0f;
+  --sidebar-bg: #0f0f0f;
+  --input-bg: #121212;
+  --input-border: #303030;
+  --shadow: rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.2s, color 0.2s;
+}
+a { text-decoration: none; color: inherit; }
+
+/* ── HEADER ── */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 56px;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.header-left { display: flex; align-items: center; gap: 4px; min-width: 200px; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: none; background: none; color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.icon-btn:hover { background: var(--hover); }
+.logo-wrap { display: flex; align-items: center; gap: 2px; cursor: pointer; padding: 0 8px; }
+.logo-icon {
+  width: 34px; height: 24px;
+  background: var(--red);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-icon::after {
+  content: '';
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 7px 0 7px 13px;
+  border-color: transparent transparent transparent #fff;
+  margin-left: 3px;
+}
+.logo-text {
+  font-size: 19px; font-weight: 700; letter-spacing: -0.5px;
+  color: var(--text);
+}
+.logo-country {
+  font-size: 10px; color: var(--text2);
+  margin-top: -12px; margin-left: 1px;
+}
+
+/* Search */
+.header-center {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  max-width: 720px; gap: 8px;
+}
+.search-form {
+  display: flex; flex: 1; max-width: 600px;
+  height: 40px;
+}
+.search-input {
+  flex: 1; padding: 0 16px;
+  font-size: 16px; font-family: 'Roboto', sans-serif;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-right: none;
+  border-radius: 40px 0 0 40px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: #1c62b9; }
+.search-input::placeholder { color: var(--text2); }
+.search-btn {
+  width: 64px; height: 40px;
+  background: var(--surface2);
+  border: 1px solid var(--input-border);
+  border-radius: 0 40px 40px 0;
+  font-size: 16px; cursor: pointer; color: var(--text);
+  transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.search-btn:hover { background: var(--hover); }
+.mic-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--surface2);
+  border: none; font-size: 15px; color: var(--text);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.mic-btn:hover { background: var(--hover); }
+
+/* Header right */
+.header-right { display: flex; align-items: center; gap: 4px; min-width: 200px; justify-content: flex-end; }
+.sign-in-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid #3d7cf4;
+  border-radius: 99px;
+  color: #3d7cf4;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; background: none;
+  font-family: 'Roboto', sans-serif;
+  transition: background 0.15s;
+}
+.sign-in-btn:hover { background: rgba(61,124,244,0.08); }
+.avatar-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  overflow: hidden; cursor: pointer; border: none;
+  background: var(--surface2); flex-shrink: 0;
+}
+.avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ── LAYOUT ── */
+.app-body { display: flex; padding-top: 56px; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed; top: 56px; left: 0; bottom: 0;
+  width: 240px; background: var(--sidebar-bg);
+  overflow-y: auto; overflow-x: hidden;
+  padding: 12px 0;
+  transition: transform 0.2s ease, width 0.2s ease;
+  z-index: 100;
+}
+.sidebar.collapsed { width: 72px; }
+.sidebar.hidden { transform: translateX(-100%); }
+
+.sidebar-section { padding: 8px 0; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sidebar-section:last-child { border-bottom: none; }
+.sidebar-section-title {
+  font-size: 14px; font-weight: 600;
+  padding: 8px 24px 4px;
+  color: var(--text);
+}
+
+.sidebar-item {
+  display: flex; align-items: center; gap: 24px;
+  padding: 0 24px; height: 40px;
+  font-size: 14px; color: var(--text);
+  cursor: pointer; border-radius: 10px; margin: 0 8px;
+  white-space: nowrap; overflow: hidden;
+  transition: background 0.12s;
+}
+.sidebar-item:hover { background: var(--hover); }
+.sidebar-item.active { background: var(--hover); font-weight: 600; }
+.sidebar-item .si-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
+.sidebar-item .si-label { overflow: hidden; text-overflow: ellipsis; }
+
+.sidebar.collapsed .sidebar-item { gap: 0; justify-content: center; padding: 0; border-radius: 12px; }
+.sidebar.collapsed .si-label { display: none; }
+.sidebar.collapsed .sidebar-section-title { display: none; }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  margin-left: 240px;
+  min-height: calc(100vh - 56px);
+  transition: margin-left 0.2s ease;
+}
+.main.sidebar-collapsed { margin-left: 72px; }
+.main.sidebar-hidden { margin-left: 0; }
+
+/* Filter chips */
+.chips-row {
+  position: sticky; top: 56px; z-index: 90;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex; gap: 8px; overflow-x: auto;
+  scrollbar-width: none;
+}
+.chips-row::-webkit-scrollbar { display: none; }
+.chip {
+  padding: 6px 14px; border-radius: 8px;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; white-space: nowrap;
+  border: none; font-family: 'Roboto', sans-serif;
+  background: var(--chip-inactive);
+  color: var(--chip-inactive-text);
+  transition: background 0.15s, color 0.15s;
+}
+.chip.active {
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+.chip:hover:not(.active) { background: var(--border); }
+
+/* Video grid */
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px 8px;
+  padding: 20px 16px;
+}
+
+/* Video card */
+.video-card { cursor: pointer; }
+.thumb-wrap {
+  position: relative; width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  border-radius: 12px; overflow: hidden;
+  background: var(--surface2);
+}
+.thumb-wrap img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.video-card:hover .thumb-wrap img { transform: scale(1.03); }
+.duration {
+  position: absolute; bottom: 8px; right: 8px;
+  background: rgba(0,0,0,0.8); color: #fff;
+  font-size: 12px; font-weight: 600;
+  padding: 2px 6px; border-radius: 4px;
+}
+.progress-bar {
+  position: absolute; bottom: 0; left: 0;
+  height: 3px; background: var(--red);
+  border-radius: 0 0 0 0;
+}
+
+.video-meta {
+  display: flex; align-items: flex-start;
+  gap: 12px; padding: 12px 4px 4px;
+}
+.channel-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  overflow: hidden; flex-shrink: 0; background: var(--surface2);
+}
+.channel-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.channel-avatar.placeholder {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700;
+  color: #fff;
+}
+
+.video-text { flex: 1; min-width: 0; }
+.video-title-text {
+  font-size: 14px; font-weight: 500; line-height: 1.4;
+  color: var(--text);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; margin-bottom: 4px;
+}
+.video-channel { font-size: 13px; color: var(--text2); margin-bottom: 2px; }
+.video-channel:hover { color: var(--text); }
+.video-info-row { font-size: 13px; color: var(--text2); }
+.more-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: none; background: none; color: var(--text2);
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.video-card:hover .more-btn { opacity: 1; }
+.more-btn:hover { background: var(--hover); color: var(--text); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 24px 20px;
+  color: var(--text2);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+.footer-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 12px; }
+.footer-links a { color: var(--text2); transition: color 0.15s; }
+.footer-links a:hover { color: var(--text); }
+.footer-copy { color: var(--text2); }
+/* Hover play overlay */
+.play-hover{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.25);
+  opacity:0;
+  transition:opacity 0.25s ease;
+  border-radius:12px;
+}
+
+.play-hover i{
+  font-size:34px;
+  color:white;
+  background:rgba(0,0,0,0.6);
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform:scale(0.8);
+  transition:transform 0.25s ease;
+}
+
+/* Show on hover */
+.video-card:hover .play-hover{
+  opacity:1;
+}
+
+.video-card:hover .play-hover i{
+  transform:scale(1);
+}
+
+/* Video preview */
+.preview-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  border-radius:12px;
+  transition:opacity 0.3s ease;
+}
+
+.video-card:hover .preview-video{
+  opacity:1;
+}
+
+.video-card:hover .thumb-img{
+  opacity:0;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <button class="icon-btn" id="menu-btn" title="Menu"><i class="fas fa-bars"></i></button>
+    <div class="logo-wrap">
+      <div class="logo-icon"></div>
+      <div>
+        <div class="logo-text">YouTube</div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="header-center">
+    <form class="search-form" onsubmit="return false;">
+      <input class="search-input" type="text" placeholder="Search" id="search-input" autocomplete="off">
+      <button class="search-btn" type="submit"><i class="fas fa-search"></i></button>
+    </form>
+    <button class="mic-btn" title="Search with your voice"><i class="fas fa-microphone"></i></button>
+  </div>
+
+  <div class="header-right">
+    <button class="icon-btn" title="Create"><i class="fas fa-video"></i></button>
+    <button class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></button>
+    <button class="icon-btn" id="theme-btn" title="Toggle theme"><i class="fas fa-moon"></i></button>
+    <div class="avatar-btn" title="Your channel">
+      <img src="pictures/airack.jpg" alt="You" onerror="this.parentElement.style.background='#3d7cf4';this.style.display='none'">
+    </div>
+  </div>
+</header>
+
+<!-- BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-item active"><span class="si-icon"><i class="fas fa-home"></i></span><span class="si-label">Home</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-bolt"></i></span><span class="si-label">Shorts</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-tv"></i></span><span class="si-label">Subscriptions</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">You</div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-book"></i></span><span class="si-label">Library</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-history"></i></span><span class="si-label">History</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-film"></i></span><span class="si-label">Your videos</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-clock"></i></span><span class="si-label">Watch later</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-thumbs-up"></i></span><span class="si-label">Liked videos</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Subscriptions</div>
+      <div class="sidebar-item"><span class="si-icon">🎮</span><span class="si-label">MrBeast Gaming</span></div>
+      <div class="sidebar-item"><span class="si-icon">👨‍👩‍👧</span><span class="si-label">The Royalty Family</span></div>
+      <div class="sidebar-item"><span class="si-icon">⚽</span><span class="si-label">BR7 Football</span></div>
+      <div class="sidebar-item"><span class="si-icon">🎮</span><span class="si-label">Total Gaming</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-fire"></i></span><span class="si-label">Trending</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-shopping-bag"></i></span><span class="si-label">Shopping</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-music"></i></span><span class="si-label">Music</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-gamepad"></i></span><span class="si-label">Gaming</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-newspaper"></i></span><span class="si-label">News</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-dumbbell"></i></span><span class="si-label">Sports</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-cog"></i></span><span class="si-label">Settings</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-flag"></i></span><span class="si-label">Report history</span></div>
+      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-question-circle"></i></span><span class="si-label">Help</span></div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="main">
+
+    <!-- Filter Chips -->
+    <div class="chips-row">
+      <button class="chip active">All</button>
+      <button class="chip">Gaming</button>
+      <button class="chip">Football</button>
+      <button class="chip">Music</button>
+      <button class="chip">Mixes</button>
+      <button class="chip">Live</button>
+      <button class="chip">Coding</button>
+      <button class="chip">Anime</button>
+      <button class="chip">Watched</button>
+      <button class="chip">New to you</button>
+      <button class="chip">Recently uploaded</button>
+    </div>
+
+    <!-- Video Grid -->
+    <div class="videos-grid" id="videos-grid">
+
+      <!-- Video 1 -->
+      <div class="video-card">
+        <div class="thumb-wrap">
+  <img class="thumb-img" src="images/america.avif" alt="Aptech Nigeria" onerror="this.style.background='#333'">
+  
+
+  <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+  <span class="duration">5:20</span>
+</div>
+        <div class="video-meta">
+          <div class="channel-avatar">
+            <img src="images/mr beast profile.jpg" alt="MrBeast Gaming" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#ff0000';this.parentElement.textContent='MB';this.remove()">
+          </div>
+          <div class="video-text">
+            <p class="video-title-text">We Built America in Minecraft</p>
+            <p class="video-channel">MrBeast Gaming</p>
+            <p class="video-info-row">11.7M views &middot; 2 hours ago</p>
+          </div>
+          <button class="more-btn" title="More options"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+  
+      <!-- Video 2 -->
+      <div class="video-card">
+     <div class="thumb-wrap">
+          <img src="images/real dad.avif" alt="Football" onerror="this.style.background='#333'">
+          
+  <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+  <span class="duration">5:20</span>
+</div>
+        <div class="video-meta">
+          <div class="channel-avatar">
+            <img src="images/pics.jpg" alt="The Royalty Family" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#e91e8c';this.parentElement.textContent='RF';this.remove()">
+          </div>
+          <div class="video-text">
+            <p class="video-title-text">I Found my REAL Dad..</p>
+            <p class="video-channel">The Royalty Family</p>
+            <p class="video-info-row">5.5M views &middot; 1 day ago</p>
+          </div>
+          <button class="more-btn" title="More options"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+
+      <!-- Video 3 -->
+      <div class="video-card">
+        <div class="thumb-wrap">
+          <img src="images/ball.avif" alt="Football" onerror="this.style.background='#333'">
+          <span class="duration">8:47</span>
+           <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+        </div>
+        <div class="video-meta">
+          <div class="channel-avatar">
+            <img src="images/ballers.jpg" alt="BR7 Football" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#00897b';this.parentElement.textContent='BR';this.remove()">
+          </div>
+          <div class="video-text">
+            <p class="video-title-text">The Day Ronaldo, Messi, Neymar &amp; Mbappé Shocked The Whole World</p>
+            <p class="video-channel">BR7 Football</p>
+            <p class="video-info-row">23M views &middot; 2 years ago</p>
+          </div>
+          <button class="more-btn" title="More options"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+
+      <!-- Video 4 -->
+      <div class="video-card">
+        <div class="thumb-wrap">
+          <img src="images/behind.avif" alt="Beast Games" onerror="this.style.background='#333'">
+          <span class="duration">31:05</span>
+          <div class="progress-bar" style="width: 25%"></div>
+           <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+        </div>
+        <div class="video-meta">
+          <div class="channel-avatar">
+            <img src="images/beast.jpg" alt="MrBeast 2" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#ff0000';this.parentElement.textContent='MB';this.remove()">
+          </div>
+          <div class="video-text">
+            <p class="video-title-text">How I Made Beast Games Season 2</p>
+            <p class="video-channel">MrBeast 2</p>
+            <p class="video-info-row">6.3M views &middot; 3 days ago</p>
+          </div>
+          <button class="more-btn" title="More options"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+
+      <!-- Video 5 -->
+      <div class="video-card">
+        <div class="thumb-wrap">
+          <img src="images/ff page.avif" alt="Free Fire" onerror="this.style.background='#333'">
+          <span class="duration">15:32</span>
+           <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+        </div>
+        <div class="video-meta">
+          <div class="channel-avatar">
+            <img src="images/ff.jpg" alt="Total Gaming" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#f57c00';this.parentElement.textContent='TG';this.remove()">
+          </div>
+          <div class="video-text">
+            <p class="video-title-text">COMEBACK SOLO VS SQUAD AC80 GOD LEVEL GAMEPLAY | GARENA FREE FIRE</p>
+            <p class="video-channel">Total Gaming</p>
+            <p class="video-info-row">2.6M views &middot; 3 weeks ago</p>
+          </div>
+          <button class="more-btn" title="More options"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+
+      <!-- Video 6 -->
+      <div class="video-card">
+        <div class="thumb-wrap">
+          <img src="images/pure.avif" alt="Tanjiro Rap" onerror="this.style.background='#333'">
+          <span class="duration">4:13</span>
+           <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+        </div>
+        <div class="video-meta">
+          <div class="channel-avatar">
+            <img src="images/juice.jpg" alt="Pure O Juice" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#7b1fa2';this.parentElement.textContent='PJ';this.remove()">
+          </div>
+          <div class="video-text">
+            <p class="video-title-text">TANJIRO RAP (DEMON SLAYER UK DRILL) prod by @_cj_producer_</p>
+            <p class="video-channel">Pure O Juice</p>
+            <p class="video-info-row">326K views &middot; 4 weeks ago</p>
+          </div>
+          <button class="more-btn" title="More options"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+
+      <!-- Video 7 -->
+      <div class="video-card">
+        <div class="thumb-wrap">
+          <img src="images/ex.avif" alt="Chained Challenge" onerror="this.style.background='#333'">
+          <span class="duration">24:58</span>
+           <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+        </div>
+        <div class="video-meta">
+          <div class="channel-avatar">
+            <img src="images/beast.jpg" alt="MrBeast" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#ff0000';this.parentElement.textContent='MB';this.remove()">
+          </div>
+          <div class="video-text">
+            <p class="video-title-text">Survive 30 Days Chained To Your Ex, Win $250,000</p>
+            <p class="video-channel">MrBeast</p>
+            <p class="video-info-row">195M views &middot; 4 months ago</p>
+          </div>
+          <button class="more-btn" title="More options"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+
+      <!-- Video 8 -->
+      <div class="video-card">
+        <div class="thumb-wrap">
+          <img src="images/gift.avif" alt="Christmas Present" onerror="this.style.background='#333'">
+          <span class="duration">12:44</span>
+           <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+        </div>
+        <div class="video-meta">
+          <div class="channel-avatar">
+            <img src="images/pics.jpg" alt="Royalty Family" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#e91e8c';this.parentElement.textContent='RF';this.remove()">
+          </div>
+          <div class="video-text">
+            <p class="video-title-text">Opening his Dream Christmas Present</p>
+            <p class="video-channel">The Royalty Family</p>
+            <p class="video-info-row">15M views &middot; 4 weeks ago</p>
+          </div>
+          <button class="more-btn" title="More options"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+
+   <!-- Video 9 -->
+<div class="video-card">
+  <div class="thumb-wrap">
+    <img src="images/tech.avif" alt="Aptech Nigeria" onerror="this.style.background='#333'">
+    <span class="duration">5:20</span>
+     <!-- Hover Play button -->
+  <div class="play-hover">
+    <i class="fas fa-play"></i>
+  </div>
+
+  </div>
+
+  <div class="video-meta">
+    <div class="channel-avatar">
+      <img src="images/aptech.jpg" alt="Aptech"
+      onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#1565c0';this.parentElement.textContent='AP';this.remove()">
+    </div>
+
+    <div class="video-text">
+      <p class="video-title-text">Success Stories from Aptech Nigeria Students</p>
+      <p class="video-channel">Aptech Computer Education</p>
+      <p class="video-info-row">2K views &middot; 1 year ago</p>
+    </div>
+
+    <button class="more-btn" title="More options">
+      <i class="fas fa-ellipsis-v"></i>
+    </button>
+  </div>
+</div>
+
+    </div><!-- /videos-grid -->
+
+    <footer>
+      <div class="footer-links">
+        <a href="#">About</a><a href="#">Press</a><a href="#">Copyright</a>
+        <a href="#">Contact us</a><a href="#">Creators</a><a href="#">Advertise</a>
+        <a href="#">Developers</a><a href="#">Terms</a><a href="#">Privacy</a>
+        <a href="#">Policy & Safety</a><a href="#">How YouTube works</a>
+        <a href="#">Test new features</a>
+      </div>
+      <div class="footer-copy">©  Abiola 2026 Google LLC</div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+// ── Sidebar toggle ──
+const menuBtn = document.getElementById('menu-btn');
+const sidebar = document.getElementById('sidebar');
+const main    = document.getElementById('main');
+
+let state = 'full'; // full | collapsed | hidden
+
+menuBtn.addEventListener('click', () => {
+  const isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    state = state === 'hidden' ? 'full' : 'hidden';
+  } else {
+    state = state === 'full' ? 'collapsed' : state === 'collapsed' ? 'hidden' : 'full';
+  }
+  sidebar.className = 'sidebar' + (state === 'collapsed' ? ' collapsed' : state === 'hidden' ? ' hidden' : '');
+  main.className    = 'main'    + (state === 'collapsed' ? ' sidebar-collapsed' : state === 'hidden' ? ' sidebar-hidden' : '');
+});
+
+// Responsive init
+function initSidebar() {
+  if (window.innerWidth < 768) {
+    state = 'hidden';
+    sidebar.className = 'sidebar hidden';
+    main.className    = 'main sidebar-hidden';
+  } else if (window.innerWidth < 1100) {
+    state = 'collapsed';
+    sidebar.className = 'sidebar collapsed';
+    main.className    = 'main sidebar-collapsed';
+  } else {
+    state = 'full';
+    sidebar.className = 'sidebar';
+    main.className    = 'main';
+  }
+}
+initSidebar();
+window.addEventListener('resize', initSidebar);
+
+// ── Sidebar item active state ──
+document.querySelectorAll('.sidebar-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+// ── Filter chips ──
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  });
+});
+
+// ── Dark mode ──
+const themeBtn = document.getElementById('theme-btn');
+const themeIcon = themeBtn.querySelector('i');
+const saved = localStorage.getItem('yt-theme') || 'light';
+document.documentElement.setAttribute('data-theme', saved);
+themeIcon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+
+themeBtn.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  themeIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+  localStorage.setItem('yt-theme', next);
+});
+
+// ── Video card hover ──
+document.querySelectorAll('.video-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const title = card.querySelector('.video-title-text').textContent;
+    alert('Playing: ' + title + '\n\n(Connect to a real video URL to make this work!)');
+  });
+});
+
+</script>
+</body>
+</html>
