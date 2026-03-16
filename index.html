@@ -373,6 +373,67 @@ footer {
 .video-card:hover .thumb-img{
   opacity:0;
 }
+  /* ===== RESPONSIVE FIXES ===== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+
+  .videos-grid{
+    grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+  }
+
+  .header-left{
+    min-width:auto;
+  }
+
+  .header-right{
+    min-width:auto;
+  }
+
+}
+
+/* Phones */
+@media (max-width: 768px){
+
+  .sidebar{
+    transform:translateX(-100%);
+  }
+
+  .main{
+    margin-left:0;
+  }
+
+  .videos-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .header-center{
+    max-width:100%;
+  }
+
+  .search-form{
+    max-width:100%;
+  }
+
+}
+
+/* Small phones */
+@media (max-width: 480px){
+
+  .videos-grid{
+    grid-template-columns: 1fr;
+    padding:16px 10px;
+  }
+
+  .header{
+    padding:0 10px;
+  }
+
+  .chips-row{
+    padding:10px;
+  }
+
+}
 </style>
 </head>
 <body>
