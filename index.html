@@ -1,1524 +1,1112 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>YouTube</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Clone</title>
+<meta name="description" content="A responsive YouTube UI clone with search, filters, a watch page, likes, Watch later, history and dark mode.">
+<link rel="icon" href="images/favicon.avif">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script>
+  // Apply the saved or system theme before first paint to avoid a flash.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('yt-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
 <style>
-/* ============================================
-   PC/DESKTOP STYLES (Your Original First Code)
-   ============================================ */
-@media (min-width: 1024px) {
-  :root {
-    --bg: #f9f9f9;
-    --surface: #ffffff;
-    --surface2: #f2f2f2;
-    --text: #0f0f0f;
-    --text2: #606060;
-    --border: #e5e5e5;
-    --hover: #f2f2f2;
-    --chip-bg: #0f0f0f;
-    --chip-text: #fff;
-    --chip-inactive: #f2f2f2;
-    --chip-inactive-text: #0f0f0f;
-    --header-bg: #ffffff;
-    --sidebar-bg: #ffffff;
-    --input-bg: #ffffff;
-    --input-border: #ccc;
-    --shadow: rgba(0,0,0,0.08);
-    --red: #ff0000;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  
-  body {
-    font-family: 'Roboto', Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    transition: background 0.2s, color 0.2s;
-  }
-
-  a { text-decoration: none; color: inherit; }
-
-  /* ── HEADER ── */
-  .header {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-    height: 56px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center;
-    padding: 0 16px;
-    gap: 8px;
-    transition: background 0.2s, border-color 0.2s;
-  }
-
-  .header-left { display: flex; align-items: center; gap: 4px; min-width: 200px; }
-  
-  .icon-btn {
-    width: 40px; height: 40px; border-radius: 50%;
-    border: none; background: none; color: var(--text);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; cursor: pointer;
-    transition: background 0.15s;
-    flex-shrink: 0;
-  }
-  .icon-btn:hover { background: var(--hover); }
-
-  .logo-wrap { display: flex; align-items: center; gap: 2px; cursor: pointer; padding: 0 8px; }
-  .logo-icon {
-    width: 34px; height: 24px;
-    background: var(--red);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .logo-icon::after {
-    content: '';
-    width: 0; height: 0;
-    border-style: solid;
-    border-width: 7px 0 7px 13px;
-    border-color: transparent transparent transparent #fff;
-    margin-left: 3px;
-  }
-  .logo-text {
-    font-size: 19px; font-weight: 700; letter-spacing: -0.5px;
-    color: var(--text);
-  }
-
-  /* Search */
-  .header-center {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    max-width: 720px; gap: 8px;
-  }
-  .search-form {
-    display: flex; flex: 1; max-width: 600px;
-    height: 40px;
-  }
-  .search-input {
-    flex: 1; padding: 0 16px;
-    font-size: 16px; font-family: 'Roboto', sans-serif;
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-right: none;
-    border-radius: 40px 0 0 40px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .search-input:focus { border-color: #1c62b9; }
-  .search-input::placeholder { color: var(--text2); }
-  .search-btn {
-    width: 64px; height: 40px;
-    background: var(--surface2);
-    border: 1px solid var(--input-border);
-    border-radius: 0 40px 40px 0;
-    font-size: 16px; cursor: pointer; color: var(--text);
-    transition: background 0.15s;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .search-btn:hover { background: var(--hover); }
-  .mic-btn {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: var(--surface2);
-    border: none; font-size: 15px; color: var(--text);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s;
-  }
-  .mic-btn:hover { background: var(--hover); }
-
-  /* Header right */
-  .header-right { display: flex; align-items: center; gap: 4px; min-width: 200px; justify-content: flex-end; }
-  .sign-in-btn {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 14px;
-    border: 1px solid #3d7cf4;
-    border-radius: 99px;
-    color: #3d7cf4;
-    font-size: 14px; font-weight: 500;
-    cursor: pointer; background: none;
-    font-family: 'Roboto', sans-serif;
-    transition: background 0.15s;
-  }
-  .sign-in-btn:hover { background: rgba(61,124,244,0.08); }
-  .avatar-btn {
-    width: 32px; height: 32px; border-radius: 50%;
-    overflow: hidden; cursor: pointer; border: none;
-    background: var(--surface2); flex-shrink: 0;
-  }
-  .avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
-
-  /* ── LAYOUT ── */
-  .app-body { display: flex; padding-top: 56px; }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    position: fixed; top: 56px; left: 0; bottom: 0;
-    width: 240px; background: var(--sidebar-bg);
-    overflow-y: auto; overflow-x: hidden;
-    padding: 12px 0;
-    transition: transform 0.2s ease, width 0.2s ease;
-    z-index: 100;
-  }
-  .sidebar.collapsed { width: 72px; }
-  .sidebar.hidden { transform: translateX(-100%); }
-
-  .sidebar-section { padding: 8px 0; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
-  .sidebar-section:last-child { border-bottom: none; }
-  .sidebar-section-title {
-    font-size: 14px; font-weight: 600;
-    padding: 8px 24px 4px;
-    color: var(--text);
-  }
-
-  .sidebar-item {
-    display: flex; align-items: center; gap: 24px;
-    padding: 0 24px; height: 40px;
-    font-size: 14px; color: var(--text);
-    cursor: pointer; border-radius: 10px; margin: 0 8px;
-    white-space: nowrap; overflow: hidden;
-    transition: background 0.12s;
-  }
-  .sidebar-item:hover { background: var(--hover); }
-  .sidebar-item.active { background: var(--hover); font-weight: 600; }
-  .sidebar-item .si-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
-  .sidebar-item .si-label { overflow: hidden; text-overflow: ellipsis; }
-
-  .sidebar.collapsed .sidebar-item { gap: 0; justify-content: center; padding: 0; border-radius: 12px; }
-  .sidebar.collapsed .si-label { display: none; }
-  .sidebar.collapsed .sidebar-section-title { display: none; }
-
-  /* ── MAIN ── */
-  .main {
-    flex: 1;
-    margin-left: 240px;
-    min-height: calc(100vh - 56px);
-    transition: margin-left 0.2s ease;
-  }
-  .main.sidebar-collapsed { margin-left: 72px; }
-  .main.sidebar-hidden { margin-left: 0; }
-
-  /* Filter chips */
-  .chips-row {
-    position: sticky; top: 56px; z-index: 90;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 20px;
-    display: flex; gap: 8px; overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .chips-row::-webkit-scrollbar { display: none; }
-  .chip {
-    padding: 6px 14px; border-radius: 8px;
-    font-size: 14px; font-weight: 500;
-    cursor: pointer; white-space: nowrap;
-    border: none; font-family: 'Roboto', sans-serif;
-    background: var(--chip-inactive);
-    color: var(--chip-inactive-text);
-    transition: background 0.15s, color 0.15s;
-  }
-  .chip.active {
-    background: var(--chip-bg);
-    color: var(--chip-text);
-  }
-  .chip:hover:not(.active) { background: var(--border); }
-
-  /* Video grid */
-  .videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px 8px;
-    padding: 20px 16px;
-  }
-
-  /* Video card */
-  .video-card { cursor: pointer; }
-  .thumb-wrap {
-    position: relative; width: 100%;
-    padding-top: 56.25%;
-    border-radius: 12px; overflow: hidden;
-    background: var(--surface2);
-  }
-  .thumb-wrap img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.3s ease;
-  }
-  .video-card:hover .thumb-wrap img { transform: scale(1.03); }
-  .duration {
-    position: absolute; bottom: 8px; right: 8px;
-    background: rgba(0,0,0,0.8); color: #fff;
-    font-size: 12px; font-weight: 600;
-    padding: 2px 6px; border-radius: 4px;
-  }
-  .progress-bar {
-    position: absolute; bottom: 0; left: 0;
-    height: 3px; background: var(--red);
-    border-radius: 0 0 0 0;
-  }
-
-  .video-meta {
-    display: flex; align-items: flex-start;
-    gap: 12px; padding: 12px 4px 4px;
-  }
-  .channel-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    overflow: hidden; flex-shrink: 0; background: var(--surface2);
-  }
-  .channel-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .channel-avatar.placeholder {
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: 700;
-    color: #fff;
-  }
-
-  .video-text { flex: 1; min-width: 0; }
-  .video-title-text {
-    font-size: 14px; font-weight: 500; line-height: 1.4;
-    color: var(--text);
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-    overflow: hidden; margin-bottom: 4px;
-  }
-  .video-channel { font-size: 13px; color: var(--text2); margin-bottom: 2px; }
-  .video-channel:hover { color: var(--text); }
-  .video-info-row { font-size: 13px; color: var(--text2); }
-  .more-btn {
-    width: 32px; height: 32px; border-radius: 50%;
-    border: none; background: none; color: var(--text2);
-    cursor: pointer; font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: opacity 0.15s, background 0.15s;
-    flex-shrink: 0;
-  }
-  .video-card:hover .more-btn { opacity: 1; }
-  .more-btn:hover { background: var(--hover); color: var(--text); }
-
-  /* Hover play overlay */
-  .play-hover{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    background:rgba(0,0,0,0.25);
-    opacity:0;
-    transition:opacity 0.25s ease;
-    border-radius:12px;
-  }
-  .play-hover i{
-    font-size:34px;
-    color:white;
-    background:rgba(0,0,0,0.6);
-    width:60px; height:60px;
-    border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    transform:scale(0.8);
-    transition:transform 0.25s ease;
-  }
-  .video-card:hover .play-hover{ opacity:1; }
-  .video-card:hover .play-hover i{ transform:scale(1); }
-
-  /* ── FOOTER ── */
-  footer {
-    padding: 24px 20px;
-    color: var(--text2);
-    font-size: 13px;
-    border-top: 1px solid var(--border);
-  }
-  .footer-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 12px; }
-  .footer-links a { color: var(--text2); transition: color 0.15s; }
-  .footer-links a:hover { color: var(--text); }
-  .footer-copy { color: var(--text2); }
-
-  /* Hide mobile elements */
-  .mobile-header, .mobile-chips, .mobile-content, .bottom-nav, .sidebar-overlay {
-    display: none !important;
-  }
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface2: #f2f2f2;
+  --text: #0f0f0f;
+  --text2: #606060;
+  --border: #e5e5e5;
+  --hover: rgba(0,0,0,0.05);
+  --chip: #f2f2f2;
+  --chip-active-bg: #0f0f0f;
+  --chip-active-text: #ffffff;
+  --input-border: #c6c6c6;
+  --red: #ff0033;
+  --blue: #065fd4;
+  --overlay: rgba(0,0,0,0.5);
+  --header-h: 56px;
+}
+[data-theme="dark"] {
+  --bg: #0f0f0f;
+  --surface: #212121;
+  --surface2: #272727;
+  --text: #f1f1f1;
+  --text2: #aaaaaa;
+  --border: #303030;
+  --hover: rgba(255,255,255,0.1);
+  --chip: #272727;
+  --chip-active-bg: #f1f1f1;
+  --chip-active-text: #0f0f0f;
+  --input-border: #303030;
+  --blue: #3ea6ff;
 }
 
-/* ============================================
-   MOBILE/TABLET STYLES (White Background)
-   ============================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  transition: background .2s, color .2s;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+img { display: block; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── Header ── */
+.header {
+  position: fixed; inset: 0 0 auto 0; z-index: 300;
+  height: var(--header-h);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 0 16px;
+  background: var(--bg);
+}
+.header-left, .header-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  transition: background .15s;
+}
+.icon-btn:hover { background: var(--hover); }
+.logo { display: flex; align-items: center; gap: 4px; padding: 0 12px 0 8px; }
+.logo-icon {
+  width: 30px; height: 21px; border-radius: 6px; background: var(--red);
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-icon::after {
+  content: ''; margin-left: 2px;
+  border-style: solid; border-width: 5px 0 5px 9px;
+  border-color: transparent transparent transparent #fff;
+}
+.logo-text { font-size: 19px; font-weight: 700; letter-spacing: -1px; }
+.logo-badge { font-size: 10px; color: var(--text2); align-self: flex-start; margin-top: 12px; }
+
+.search {
+  flex: 1; max-width: 640px;
+  display: flex; align-items: center; gap: 12px;
+}
+.search-form { flex: 1; display: flex; height: 40px; }
+.search-box {
+  flex: 1; display: flex; align-items: center;
+  border: 1px solid var(--input-border); border-right: none;
+  border-radius: 40px 0 0 40px;
+  padding: 0 4px 0 16px;
+  background: var(--bg);
+}
+.search-box:focus-within { border-color: var(--blue); margin-left: -1px; }
+.search-input {
+  flex: 1; min-width: 0; height: 100%;
+  background: none; border: none; outline: none;
+  font: inherit; font-size: 16px; color: var(--text);
+}
+.search-input::placeholder { color: var(--text2); }
+.search-clear { width: 32px; height: 32px; border-radius: 50%; display: none; }
+.search-clear:hover { background: var(--hover); }
+.search-box.has-text .search-clear { display: inline-flex; align-items: center; justify-content: center; }
+.search-btn {
+  width: 64px;
+  border: 1px solid var(--input-border);
+  border-radius: 0 40px 40px 0;
+  background: var(--surface2);
+  font-size: 16px;
+}
+.search-btn:hover { background: var(--hover); }
+.mic-btn { background: var(--surface2); }
+.search-back { display: none; }
+
+.create-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 36px; padding: 0 14px; border-radius: 18px;
+  background: var(--surface2); font-weight: 500;
+}
+.create-btn:hover { background: var(--hover); }
+.avatar-btn { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; margin-left: 8px; }
+.avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+.mobile-search-btn { display: none; }
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed; top: var(--header-h); left: 0; bottom: 0; z-index: 200;
+  width: 240px; padding: 12px;
+  background: var(--bg);
+  overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.side-section { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.side-section:first-child { padding-top: 0; }
+.side-section:last-child { border-bottom: none; }
+.side-title { font-size: 16px; font-weight: 500; padding: 6px 12px 8px; }
+.side-item {
+  width: 100%;
+  display: flex; align-items: center; gap: 24px;
+  height: 40px; padding: 0 12px; border-radius: 10px;
+  text-align: left; white-space: nowrap;
+  transition: background .12s;
+}
+.side-item:hover { background: var(--hover); }
+.side-item.active { background: var(--surface2); font-weight: 500; }
+.side-item i { width: 24px; font-size: 18px; text-align: center; }
+.side-item .count { margin-left: auto; font-size: 12px; color: var(--text2); }
+.side-item img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+.side-foot { padding: 16px 12px; font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+/* Mini rail when the sidebar is collapsed on desktop */
+body.rail .sidebar { width: 72px; padding: 4px; }
+body.rail .side-title, body.rail .side-section.full-only, body.rail .side-foot, body.rail .side-item .count { display: none; }
+body.rail .side-section { border: none; padding: 0; }
+body.rail .side-item {
+  flex-direction: column; justify-content: center; gap: 6px;
+  height: 74px; padding: 0; font-size: 10px;
+}
+body.rail .side-item span { overflow: hidden; text-overflow: ellipsis; max-width: 64px; }
+
+.scrim { display: none; }
+
+/* ── Main ── */
+.main { margin-left: 240px; padding-top: var(--header-h); min-height: 100vh; }
+body.rail .main { margin-left: 72px; }
+
+.chips {
+  position: sticky; top: var(--header-h); z-index: 100;
+  display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none;
+  padding: 12px 24px;
+  background: var(--bg);
+}
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0; height: 32px; padding: 0 12px; border-radius: 8px;
+  background: var(--chip); font-weight: 500; white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.chip:hover { background: var(--hover); }
+.chip.active { background: var(--chip-active-bg); color: var(--chip-active-text); }
+
+.view-head { padding: 24px 24px 0; }
+.view-head h1 { font-size: 24px; font-weight: 700; }
+.view-head p { color: var(--text2); margin-top: 6px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 40px 16px;
+  padding: 24px;
+}
+
+.card { position: relative; }
+.thumb {
+  position: relative; display: block; width: 100%;
+  aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden;
+  background: var(--surface2);
+}
+.thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.card:hover .thumb img { transform: scale(1.03); }
+.card:hover .thumb { border-radius: 0; transition: border-radius .2s .1s; }
+.duration {
+  position: absolute; right: 8px; bottom: 8px;
+  padding: 1px 4px; border-radius: 4px;
+  background: rgba(0,0,0,.8); color: #fff; font-size: 12px; font-weight: 500;
+}
+.duration.live { background: var(--red); }
+.watched {
+  position: absolute; left: 0; bottom: 0; height: 4px; background: var(--red);
+}
+.watched::before { content: ''; position: absolute; inset: 0 -100vw 0 100%; background: rgba(255,255,255,.4); }
+.thumb .watched { box-shadow: none; }
+.hover-actions {
+  position: absolute; top: 8px; right: 8px;
+  display: flex; flex-direction: column; gap: 4px;
+  opacity: 0; transition: opacity .15s;
+}
+.card:hover .hover-actions, .card:focus-within .hover-actions { opacity: 1; }
+.hover-actions button {
+  width: 32px; height: 32px; border-radius: 4px;
+  background: rgba(0,0,0,.75); color: #fff; font-size: 13px;
+}
+
+.meta { display: flex; gap: 12px; padding-top: 12px; }
+.ch-avatar {
+  width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 14px;
+}
+.ch-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.meta-text { flex: 1; min-width: 0; }
+.title {
+  font-size: 16px; font-weight: 500; line-height: 22px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.sub { color: var(--text2); line-height: 20px; margin-top: 4px; }
+.sub .channel:hover { color: var(--text); }
+.sub .fa-circle-check { font-size: 12px; margin-left: 4px; }
+.kebab {
+  width: 36px; height: 36px; margin-right: -8px; border-radius: 50%;
+  flex-shrink: 0; opacity: 0; transition: opacity .15s;
+}
+.card:hover .kebab, .kebab:focus-visible, .kebab[aria-expanded="true"] { opacity: 1; }
+.kebab:hover { background: var(--hover); }
+
+.menu {
+  position: absolute; z-index: 400; min-width: 220px;
+  padding: 8px 0; border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 4px 32px rgba(0,0,0,.18);
+}
+.menu button {
+  width: 100%; display: flex; align-items: center; gap: 16px;
+  height: 36px; padding: 0 16px; text-align: left;
+}
+.menu button:hover { background: var(--hover); }
+.menu i { width: 20px; text-align: center; }
+
+.empty {
+  grid-column: 1 / -1; text-align: center; padding: 64px 16px; color: var(--text2);
+}
+.empty i { font-size: 56px; margin-bottom: 16px; color: var(--text2); opacity: .6; }
+.empty h2 { color: var(--text); font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+.empty button { margin-top: 20px; height: 36px; padding: 0 16px; border-radius: 18px; background: var(--surface2); font-weight: 500; }
+
+/* ── Watch page ── */
+.watch {
+  display: grid; grid-template-columns: minmax(0, 1fr) 402px; gap: 24px;
+  max-width: 1720px; padding: 24px; margin: 0 auto;
+}
+.player {
+  position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden;
+  background: #000; color: #fff;
+}
+.player img { width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+.player.playing img { animation: kenburns 30s linear infinite alternate; }
+@keyframes kenburns { to { transform: scale(1.12) translate(-2%, -2%); } }
+.big-play {
+  position: absolute; inset: 0; margin: auto;
+  width: 68px; height: 48px; border-radius: 14px;
+  background: var(--red); color: #fff; font-size: 22px;
+  transition: transform .15s, opacity .2s;
+}
+.big-play:hover { transform: scale(1.08); }
+.player.playing .big-play { opacity: 0; pointer-events: none; }
+.controls {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 24px 12px 6px;
+  background: linear-gradient(transparent, rgba(0,0,0,.7));
+  opacity: 1; transition: opacity .25s;
+}
+.player.playing:not(:hover) .controls { opacity: 0; }
+.scrub {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px; border-radius: 2px; cursor: pointer;
+  background: linear-gradient(var(--red), var(--red)) 0 / var(--p, 0%) 100% no-repeat, rgba(255,255,255,.3);
+}
+.scrub::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: var(--red); }
+.scrub::-moz-range-thumb { width: 13px; height: 13px; border: none; border-radius: 50%; background: var(--red); }
+.ctrl-row { display: flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 13px; }
+.ctrl-row button { width: 40px; height: 36px; color: #fff; font-size: 16px; }
+.ctrl-row .time { margin-left: 8px; font-variant-numeric: tabular-nums; }
+.ctrl-row .spacer { flex: 1; }
+
+.w-title { font-size: 20px; font-weight: 700; line-height: 28px; margin-top: 12px; }
+.w-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.w-channel { display: flex; align-items: center; gap: 12px; }
+.w-channel .ch-avatar { width: 40px; height: 40px; }
+.w-channel strong { display: block; font-size: 16px; font-weight: 500; }
+.w-channel small { color: var(--text2); font-size: 12px; }
+.sub-btn {
+  height: 36px; padding: 0 16px; border-radius: 18px; margin-left: 12px;
+  background: var(--text); color: var(--bg); font-weight: 500;
+}
+.sub-btn.on { background: var(--surface2); color: var(--text); }
+.w-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 16px; border-radius: 18px;
+  background: var(--surface2); font-weight: 500;
+}
+.pill:hover { background: var(--hover); }
+.pill.on i { color: var(--blue); }
+.like-group { display: inline-flex; border-radius: 18px; overflow: hidden; background: var(--surface2); }
+.like-group .pill { border-radius: 0; }
+.like-group .pill + .pill { border-left: 1px solid var(--border); }
+.desc {
+  margin-top: 12px; padding: 12px; border-radius: 12px;
+  background: var(--surface2); line-height: 20px;
+}
+.desc strong { font-weight: 500; }
+.desc p { margin-top: 4px; white-space: pre-line; }
+
+.comments { margin-top: 24px; }
+.comments h2 { font-size: 20px; font-weight: 700; }
+.c-form { display: flex; gap: 16px; margin: 24px 0 32px; }
+.c-form .ch-avatar { width: 40px; height: 40px; }
+.c-field { flex: 1; }
+.c-field input {
+  width: 100%; padding: 4px 0; background: none; color: var(--text);
+  border: none; border-bottom: 1px solid var(--border); outline: none; font: inherit;
+}
+.c-field input:focus { border-bottom: 2px solid var(--text); }
+.c-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.c-btns[hidden] { display: none; }
+.c-btns button { height: 36px; padding: 0 16px; border-radius: 18px; font-weight: 500; }
+.c-btns .primary { background: var(--blue); color: #fff; }
+.c-btns .primary:disabled { background: var(--surface2); color: var(--text2); cursor: default; }
+.comment { display: flex; gap: 16px; margin-bottom: 20px; }
+.comment .ch-avatar { width: 40px; height: 40px; }
+.comment b { font-weight: 500; font-size: 13px; }
+.comment b span { color: var(--text2); font-weight: 400; margin-left: 4px; }
+.comment p { margin-top: 2px; line-height: 20px; }
+
+.upnext h2 { font-size: 16px; font-weight: 500; margin-bottom: 12px; }
+.mini { display: flex; gap: 8px; margin-bottom: 8px; border-radius: 8px; }
+.mini .thumb { width: 168px; flex-shrink: 0; border-radius: 8px; }
+.mini .title { font-size: 14px; line-height: 20px; }
+.mini .sub { font-size: 12px; line-height: 18px; margin-top: 4px; }
+.mini:hover .title { color: var(--text); }
+
+.toast {
+  position: fixed; left: 24px; bottom: 24px; z-index: 500;
+  padding: 14px 24px; border-radius: 8px;
+  background: #0f0f0f; color: #fff;
+  opacity: 0; visibility: hidden; transform: translateY(16px);
+  transition: transform .25s ease, opacity .25s ease, visibility 0s .25s;
+}
+[data-theme="dark"] .toast { background: #f1f1f1; color: #0f0f0f; }
+.toast.show { opacity: 1; visibility: visible; transform: none; transition: transform .25s ease, opacity .25s ease; }
+
+footer.site { padding: 24px; color: var(--text2); font-size: 12px; }
+
+/* Bottom nav (phones only) */
+.bottom-nav { display: none; }
+
+/* ── Tablet: sidebar becomes a drawer ── */
+@media (max-width: 1312px) {
+  .watch { grid-template-columns: minmax(0, 1fr) 360px; }
+}
+@media (max-width: 1100px) {
+  .watch { grid-template-columns: 1fr; }
+  .mini .thumb { width: 160px; }
+}
 @media (max-width: 1023px) {
-  :root {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f9f9f9;
-    --bg-card: #f2f2f2;
-    --text-primary: #0f0f0f;
-    --text-secondary: #606060;
-    --text-tertiary: #909090;
-    --border-color: #e5e5e5;
-    --yt-red: #ff0000;
-    --chip-bg: #f2f2f2;
-    --chip-active: #0f0f0f;
+  .main, body.rail .main { margin-left: 0; }
+  .sidebar {
+    top: 0; width: 240px; z-index: 600;
+    transform: translateX(-100%); transition: transform .25s ease;
+    padding-top: 0;
   }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+  .sidebar .drawer-head { display: flex; }
+  body.drawer .sidebar { transform: none; }
+  body.rail .sidebar { width: 240px; padding: 0 12px 12px; }
+  body.rail .side-title, body.rail .side-section.full-only, body.rail .side-foot { display: block; }
+  body.rail .side-section { border-bottom: 1px solid var(--border); padding: 12px 0; }
+  body.rail .side-item { flex-direction: row; height: 40px; padding: 0 12px; font-size: 14px; gap: 24px; justify-content: flex-start; }
+  .scrim {
+    position: fixed; inset: 0; z-index: 550; background: var(--overlay);
+    opacity: 0; pointer-events: none; transition: opacity .25s; display: block;
   }
+  body.drawer .scrim { opacity: 1; pointer-events: auto; }
+}
+.drawer-head { display: none; align-items: center; gap: 4px; height: var(--header-h); position: sticky; top: 0; background: var(--bg); z-index: 1; }
 
-  body {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.4;
-    min-height: 100vh;
-    padding-bottom: 56px;
-  }
+/* ── Phones ── */
+@media (max-width: 656px) {
+  :root { --header-h: 48px; }
+  .header { padding: 0 4px 0 8px; gap: 4px; }
+  .logo { padding: 0 4px; }
+  .logo-text { font-size: 18px; }
+  .header .menu-toggle, .create-btn span, .mic-btn { display: none; }
+  .create-btn { width: 40px; padding: 0; justify-content: center; background: none; }
+  .search { display: none; }
+  .mobile-search-btn { display: inline-flex; }
+  body.searching .header-left, body.searching .header-right { display: none; }
+  body.searching .search { display: flex; max-width: none; gap: 4px; }
+  body.searching .search-back { display: inline-flex; }
+  .search-btn { width: 48px; }
 
-  /* Hide PC elements */
-  .pc-header, .pc-sidebar, .pc-main, .app-body {
-    display: none !important;
-  }
+  .chips { padding: 8px 12px; gap: 8px; }
+  .grid { grid-template-columns: 1fr; gap: 24px; padding: 0 0 16px; }
+  .card .thumb { border-radius: 0; }
+  .meta { padding: 12px 12px 0; }
+  .title { font-size: 14px; line-height: 20px; }
+  .sub { font-size: 12px; margin-top: 2px; }
+  .kebab { opacity: 1; }
+  .hover-actions { display: none; }
+  .view-head { padding: 16px 12px 12px; }
 
-  /* ── MOBILE HEADER ── */
-  .mobile-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 48px;
-    background: var(--bg-primary);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
-    z-index: 1000;
-    gap: 12px;
-    border-bottom: 1px solid var(--border-color);
-  }
+  .watch { padding: 0 0 16px; gap: 16px; }
+  .player { border-radius: 0; position: sticky; top: var(--header-h); z-index: 50; }
+  .player .controls { opacity: 1 !important; }
+  .w-info, .comments, .upnext { padding: 0 12px; }
+  .w-title { font-size: 18px; line-height: 26px; }
+  .w-actions { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; width: 100%; }
+  .w-actions .pill { flex-shrink: 0; }
+  .mini .thumb { width: 150px; }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .menu-btn {
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    text-decoration: none;
-  }
-
-  .logo-icon {
-    width: 28px;
-    height: 20px;
-    background: var(--yt-red);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .logo-icon::after {
-    content: '';
-    width: 0;
-    height: 0;
-    border-left: 10px solid white;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    margin-left: 2px;
-  }
-
-  .logo-text {
-    color: var(--text-primary);
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-  }
-
-  .logo-badge {
-    font-size: 10px;
-    color: var(--text-secondary);
-    margin-left: 2px;
-    margin-top: -8px;
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .header-btn {
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .create-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    background: transparent;
-    border: none;
-    color: var(--text-primary);
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-
-  .avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    overflow: hidden;
-    cursor: pointer;
-  }
-
-  .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* ── CHIPS ── */
-  .mobile-chips {
-    position: fixed;
-    top: 48px;
-    left: 0;
-    right: 0;
-    background: var(--bg-primary);
-    padding: 8px 12px;
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    z-index: 100;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .mobile-chips::-webkit-scrollbar { display: none; }
-
-  .chip {
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background: var(--chip-bg);
-    color: var(--text-primary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-    transition: all 0.2s;
-  }
-
-  .chip.active {
-    background: var(--chip-active);
-    color: #ffffff;
-    border-color: var(--chip-active);
-  }
-
-  /* ── MAIN CONTENT ── */
-  .mobile-content {
-    padding-top: 104px;
-    display: block;
-  }
-
-  /* ── VIDEO LIST (Same as PC dimensions) ── */
-  .video-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 0 12px;
-  }
-
-  .video-item {
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-  }
-
-  .video-thumb {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16/9;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--bg-card);
-    margin-bottom: 10px;
-  }
-
-  .video-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .video-duration {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    background: rgba(0,0,0,0.8);
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  .video-info {
-    display: flex;
-    gap: 12px;
-    padding: 0 4px;
-  }
-
-  .channel-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  .channel-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .video-details {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .video-title {
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.4;
-    margin-bottom: 4px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .video-meta {
-    font-size: 13px;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-  }
-
-  .verified {
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-
-  .more-btn {
-    width: 24px;
-    height: 24px;
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: -4px;
-  }
-
-  /* ── BOTTOM NAV ── */
+  body { padding-bottom: 56px; }
   .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    background: var(--bg-primary);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 1000;
+    position: fixed; inset: auto 0 0 0; z-index: 300;
+    display: flex; height: 56px;
     padding-bottom: env(safe-area-inset-bottom);
+    background: var(--bg); border-top: 1px solid var(--border);
   }
-
-  .nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    color: var(--text-secondary);
-    text-decoration: none;
+  .bottom-nav button {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
     font-size: 10px;
-    height: 100%;
-    transition: color 0.2s;
   }
+  .bottom-nav i { font-size: 20px; }
+  .bottom-nav .fa-circle-plus { font-size: 32px; }
+  .bottom-nav button.active i { font-weight: 900; }
+  .toast { left: 12px; right: 12px; bottom: 68px; text-align: center; }
+  footer.site { display: none; }
+}
 
-  .nav-item.active {
-    color: var(--text-primary);
-  }
-
-  .nav-item i {
-    font-size: 20px;
-  }
-
-  .nav-item .create-icon {
-    font-size: 32px;
-    color: var(--text-primary);
-  }
-
-  /* ── SIDEBAR OVERLAY ── */
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
-  }
-
-  .sidebar-overlay.active {
-    display: block;
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .mobile-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 80%;
-    max-width: 300px;
-    height: 100vh;
-    background: var(--bg-primary);
-    z-index: 1001;
-    transform: translateX(-100%);
-    transition: transform 0.3s;
-    overflow-y: auto;
-    padding-top: 48px;
-  }
-
-  .mobile-sidebar.active {
-    transform: translateX(0);
-  }
-
-  .sidebar-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    background: var(--bg-primary);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .sidebar-nav {
-    padding: 8px 0;
-  }
-
-  .sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 12px 24px;
-    color: var(--text-primary);
-    text-decoration: none;
-    font-size: 14px;
-    transition: background 0.2s;
-  }
-
-  .sidebar-item:hover {
-    background: var(--bg-secondary);
-  }
-
-  .sidebar-item i {
-    width: 24px;
-    text-align: center;
-    font-size: 18px;
-  }
-
-  .sidebar-divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 8px 0;
-  }
-
-  .sidebar-section-title {
-    padding: 8px 24px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-  }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
 }
 </style>
 </head>
 <body>
 
-<!-- ============================================
-     PC/DESKTOP VERSION (Your Original Code)
-     ============================================ -->
-<header class="header pc-header">
+<header class="header">
   <div class="header-left">
-    <button class="icon-btn" id="pc-menu-btn" title="Menu"><i class="fas fa-bars"></i></button>
-    <div class="logo-wrap">
-      <div class="logo-icon"></div>
-      <div class="logo-text">YouTube</div>
-    </div>
-  </div>
-
-  <div class="header-center">
-    <form class="search-form" onsubmit="return false;">
-      <input class="search-input" type="text" placeholder="Search" id="search-input" autocomplete="off">
-      <button class="search-btn" type="submit"><i class="fas fa-search"></i></button>
-    </form>
-    <button class="mic-btn" title="Search with your voice"><i class="fas fa-microphone"></i></button>
-  </div>
-
-  <div class="header-right">
-    <button class="icon-btn" title="Create"><i class="fas fa-video"></i></button>
-    <button class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></button>
-    <button class="icon-btn" id="theme-btn" title="Toggle theme"><i class="fas fa-moon"></i></button>
-    <div class="avatar-btn" title="Your channel">
-      <img src="pictures/airack.jpg" alt="You" onerror="this.parentElement.style.background='#3d7cf4';this.style.display='none'">
-    </div>
-  </div>
-</header>
-
-<div class="app-body">
-  <!-- PC SIDEBAR -->
-  <nav class="sidebar pc-sidebar" id="pc-sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-item active"><span class="si-icon"><i class="fas fa-home"></i></span><span class="si-label">Home</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-bolt"></i></span><span class="si-label">Shorts</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-tv"></i></span><span class="si-label">Subscriptions</span></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">You</div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-book"></i></span><span class="si-label">Library</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-history"></i></span><span class="si-label">History</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-film"></i></span><span class="si-label">Your videos</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-clock"></i></span><span class="si-label">Watch later</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-thumbs-up"></i></span><span class="si-label">Liked videos</span></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Subscriptions</div>
-      <div class="sidebar-item"><span class="si-icon">🎮</span><span class="si-label">MrBeast Gaming</span></div>
-      <div class="sidebar-item"><span class="si-icon">👨‍👩‍👧</span><span class="si-label">The Royalty Family</span></div>
-      <div class="sidebar-item"><span class="si-icon">⚽</span><span class="si-label">BR7 Football</span></div>
-      <div class="sidebar-item"><span class="si-icon">🎮</span><span class="si-label">Total Gaming</span></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-fire"></i></span><span class="si-label">Trending</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-shopping-bag"></i></span><span class="si-label">Shopping</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-music"></i></span><span class="si-label">Music</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-gamepad"></i></span><span class="si-label">Gaming</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-newspaper"></i></span><span class="si-label">News</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-dumbbell"></i></span><span class="si-label">Sports</span></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-cog"></i></span><span class="si-label">Settings</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-flag"></i></span><span class="si-label">Report history</span></div>
-      <div class="sidebar-item"><span class="si-icon"><i class="fas fa-question-circle"></i></span><span class="si-label">Help</span></div>
-    </div>
-  </nav>
-
-  <!-- PC MAIN CONTENT -->
-  <main class="main pc-main" id="pc-main">
-    <div class="chips-row">
-      <button class="chip active">All</button>
-      <button class="chip">Gaming</button>
-      <button class="chip">Football</button>
-      <button class="chip">Music</button>
-      <button class="chip">Mixes</button>
-      <button class="chip">Live</button>
-      <button class="chip">Coding</button>
-      <button class="chip">Anime</button>
-      <button class="chip">Watched</button>
-      <button class="chip">New to you</button>
-      <button class="chip">Recently uploaded</button>
-    </div>
-
-    <div class="videos-grid">
-      <!-- All 9 PC Videos -->
-      <!-- Video 1 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/america.avif" alt="Video" onerror="this.style.background='#333'">
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-          <span class="duration">5:20</span>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/mr beast profile.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#ff0000';this.parentElement.textContent='MB';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">We Built America in Minecraft</p>
-            <p class="video-channel">MrBeast Gaming</p>
-            <p class="video-info-row">11.7M views &middot; 2 hours ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-
-      <!-- Video 2 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/real dad.avif" alt="Video" onerror="this.style.background='#333'">
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-          <span class="duration">5:20</span>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/pics.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#e91e8c';this.parentElement.textContent='RF';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">I Found my REAL Dad..</p>
-            <p class="video-channel">The Royalty Family</p>
-            <p class="video-info-row">5.5M views &middot; 1 day ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-
-      <!-- Video 3 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/ball.avif" alt="Video" onerror="this.style.background='#333'">
-          <span class="duration">8:47</span>
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/ballers.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#00897b';this.parentElement.textContent='BR';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">The Day Ronaldo, Messi, Neymar & Mbappé Shocked The Whole World</p>
-            <p class="video-channel">BR7 Football</p>
-            <p class="video-info-row">23M views &middot; 2 years ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-
-      <!-- Video 4 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/behind.avif" alt="Video" onerror="this.style.background='#333'">
-          <span class="duration">31:05</span>
-          <div class="progress-bar" style="width: 25%"></div>
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/beast.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#ff0000';this.parentElement.textContent='MB';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">How I Made Beast Games Season 2</p>
-            <p class="video-channel">MrBeast 2</p>
-            <p class="video-info-row">6.3M views &middot; 3 days ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-
-      <!-- Video 5 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/ff page.avif" alt="Video" onerror="this.style.background='#333'">
-          <span class="duration">15:32</span>
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/ff.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#f57c00';this.parentElement.textContent='TG';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">COMEBACK SOLO VS SQUAD AC80 GOD LEVEL GAMEPLAY | GARENA FREE FIRE</p>
-            <p class="video-channel">Total Gaming</p>
-            <p class="video-info-row">2.6M views &middot; 3 weeks ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-
-      <!-- Video 6 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/pure.avif" alt="Video" onerror="this.style.background='#333'">
-          <span class="duration">4:13</span>
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/juice.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#7b1fa2';this.parentElement.textContent='PJ';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">TANJIRO RAP (DEMON SLAYER UK DRILL) prod by @_cj_producer_</p>
-            <p class="video-channel">Pure O Juice</p>
-            <p class="video-info-row">326K views &middot; 4 weeks ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-
-      <!-- Video 7 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/ex.avif" alt="Video" onerror="this.style.background='#333'">
-          <span class="duration">24:58</span>
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/beast.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#ff0000';this.parentElement.textContent='MB';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">Survive 30 Days Chained To Your Ex, Win $250,000</p>
-            <p class="video-channel">MrBeast</p>
-            <p class="video-info-row">195M views &middot; 4 months ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-
-      <!-- Video 8 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/gift.avif" alt="Video" onerror="this.style.background='#333'">
-          <span class="duration">12:44</span>
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/pics.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#e91e8c';this.parentElement.textContent='RF';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">Opening his Dream Christmas Present</p>
-            <p class="video-channel">The Royalty Family</p>
-            <p class="video-info-row">15M views &middot; 4 weeks ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-
-      <!-- Video 9 -->
-      <div class="video-card">
-        <div class="thumb-wrap">
-          <img src="images/tech.avif" alt="Video" onerror="this.style.background='#333'">
-          <span class="duration">5:20</span>
-          <div class="play-hover"><i class="fas fa-play"></i></div>
-        </div>
-        <div class="video-meta">
-          <div class="channel-avatar">
-            <img src="images/aptech.jpg" alt="Channel" onerror="this.parentElement.classList.add('placeholder');this.parentElement.style.background='#1565c0';this.parentElement.textContent='AP';this.remove()">
-          </div>
-          <div class="video-text">
-            <p class="video-title-text">Success Stories from Aptech Nigeria Students</p>
-            <p class="video-channel">Aptech Computer Education</p>
-            <p class="video-info-row">2K views &middot; 1 year ago</p>
-          </div>
-          <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      <div class="footer-links">
-        <a href="#">About</a><a href="#">Press</a><a href="#">Copyright</a>
-        <a href="#">Contact us</a><a href="#">Creators</a><a href="#">Advertise</a>
-        <a href="#">Developers</a><a href="#">Terms</a><a href="#">Privacy</a>
-        <a href="#">Policy & Safety</a><a href="#">How YouTube works</a>
-        <a href="#">Test new features</a>
-      </div>
-      <div class="footer-copy">© Abiola 2026 Google LLC</div>
-    </footer>
-  </main>
-</div>
-
-<!-- ============================================
-     MOBILE VERSION (White Background, No Sponsored/Shorts)
-     ============================================ -->
-
-<!-- MOBILE HEADER -->
-<header class="mobile-header">
-  <div class="header-left">
-    <button class="menu-btn" id="mobile-menu-btn">
-      <i class="fas fa-bars"></i>
-    </button>
-    <a href="#" class="logo">
-      <div class="logo-icon"></div>
+    <button class="icon-btn menu-toggle" id="menuBtn" aria-label="Menu" aria-controls="sidebar"><i class="fas fa-bars"></i></button>
+    <a href="#/" class="logo" aria-label="YouTube home">
+      <span class="logo-icon"></span>
       <span class="logo-text">YouTube</span>
       <span class="logo-badge">NG</span>
     </a>
   </div>
-  
+
+  <div class="search" role="search">
+    <button class="icon-btn search-back" id="searchBack" aria-label="Close search"><i class="fas fa-arrow-left"></i></button>
+    <form class="search-form" id="searchForm">
+      <label class="search-box" id="searchBox">
+        <span class="sr-only">Search</span>
+        <input class="search-input" id="searchInput" type="search" placeholder="Search" autocomplete="off" enterkeyhint="search">
+        <button type="button" class="search-clear" id="searchClear" aria-label="Clear search"><i class="fas fa-xmark"></i></button>
+      </label>
+      <button class="search-btn" type="submit" aria-label="Search"><i class="fas fa-magnifying-glass"></i></button>
+    </form>
+    <button class="icon-btn mic-btn" id="micBtn" aria-label="Search with your voice"><i class="fas fa-microphone"></i></button>
+  </div>
+
   <div class="header-right">
-    <button class="header-btn">
-      <i class="fas fa-search"></i>
-    </button>
-    <button class="create-btn">
-      <i class="fas fa-plus"></i>
-      <span>Create</span>
-    </button>
-    <button class="header-btn">
-      <i class="fas fa-bell"></i>
-    </button>
-    <div class="avatar">
-      <img src="pictures/airack.jpg" alt="User" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/><text fill=%22%23fff%22 x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2240%22>A</text></svg>'">
-    </div>
+    <button class="icon-btn mobile-search-btn" id="mobileSearch" aria-label="Search"><i class="fas fa-magnifying-glass"></i></button>
+    <button class="create-btn" data-toast="Uploading isn't part of this demo"><i class="fas fa-plus"></i><span>Create</span></button>
+    <button class="icon-btn" id="themeBtn" aria-label="Switch to dark theme"><i class="fas fa-moon"></i></button>
+    <button class="icon-btn" data-toast="You're all caught up" aria-label="Notifications"><i class="far fa-bell"></i></button>
+    <button class="avatar-btn" data-route="#/you" aria-label="Your library"><img src="images/airack.jpg" alt=""></button>
   </div>
 </header>
 
-<!-- MOBILE CHIPS -->
-<div class="mobile-chips">
-  <button class="chip active">All</button>
-  <button class="chip">Gaming</button>
-  <button class="chip">Kratos</button>
-  <button class="chip">Music</button>
-  <button class="chip">Live</button>
-  <button class="chip">Mixes</button>
-  <button class="chip">Watched</button>
-  <button class="chip">New to you</button>
-</div>
-
-<!-- MOBILE SIDEBAR -->
-<div class="sidebar-overlay" id="mobile-sidebar-overlay"></div>
-<nav class="mobile-sidebar" id="mobile-sidebar">
-  <div class="sidebar-header">
-    <button class="menu-btn" id="close-mobile-sidebar">
-      <i class="fas fa-bars"></i>
-    </button>
-    <a href="#" class="logo">
-      <div class="logo-icon"></div>
-      <span class="logo-text">YouTube</span>
-    </a>
+<div class="scrim" id="scrim"></div>
+<nav class="sidebar" id="sidebar" aria-label="Main">
+  <div class="drawer-head">
+    <button class="icon-btn" id="drawerClose" aria-label="Close menu"><i class="fas fa-bars"></i></button>
+    <a href="#/" class="logo"><span class="logo-icon"></span><span class="logo-text">YouTube</span></a>
   </div>
-  
-  <div class="sidebar-nav">
-    <a href="#" class="sidebar-item active">
-      <i class="fas fa-home"></i>
-      <span>Home</span>
-    </a>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-bolt"></i>
-      <span>Shorts</span>
-    </a>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-tv"></i>
-      <span>Subscriptions</span>
-    </a>
-    
-    <div class="sidebar-divider"></div>
-    
-    <div class="sidebar-section-title">You</div>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-book"></i>
-      <span>Library</span>
-    </a>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-history"></i>
-      <span>History</span>
-    </a>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-film"></i>
-      <span>Your videos</span>
-    </a>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-clock"></i>
-      <span>Watch later</span>
-    </a>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-thumbs-up"></i>
-      <span>Liked videos</span>
-    </a>
-    
-    <div class="sidebar-divider"></div>
-    
-    <div class="sidebar-section-title">Subscriptions</div>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-gamepad"></i>
-      <span>MrBeast Gaming</span>
-    </a>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-crown"></i>
-      <span>The Royalty Family</span>
-    </a>
-    <a href="#" class="sidebar-item">
-      <i class="fas fa-futbol"></i>
-      <span>BR7 Football</span>
-    </a>
+  <div class="side-section">
+    <a class="side-item" href="#/" data-nav="home"><i class="fas fa-house"></i><span>Home</span></a>
+    <a class="side-item" href="#/shorts" data-nav="shorts"><i class="fas fa-bolt"></i><span>Shorts</span></a>
+    <a class="side-item" href="#/subscriptions" data-nav="subscriptions"><i class="fas fa-tv"></i><span>Subscriptions</span></a>
+    <a class="side-item" href="#/you" data-nav="you"><i class="far fa-circle-user"></i><span>You</span></a>
   </div>
+  <div class="side-section full-only">
+    <div class="side-title">You</div>
+    <a class="side-item" href="#/history" data-nav="history"><i class="fas fa-clock-rotate-left"></i><span>History</span><span class="count" data-count="history"></span></a>
+    <a class="side-item" href="#/later" data-nav="later"><i class="far fa-clock"></i><span>Watch later</span><span class="count" data-count="later"></span></a>
+    <a class="side-item" href="#/liked" data-nav="liked"><i class="far fa-thumbs-up"></i><span>Liked videos</span><span class="count" data-count="liked"></span></a>
+  </div>
+  <div class="side-section full-only">
+    <div class="side-title">Subscriptions</div>
+    <div id="subList"></div>
+  </div>
+  <div class="side-section full-only">
+    <div class="side-title">Explore</div>
+    <a class="side-item" href="#/c/Gaming"><i class="fas fa-gamepad"></i><span>Gaming</span></a>
+    <a class="side-item" href="#/c/Football"><i class="far fa-futbol"></i><span>Sports</span></a>
+    <a class="side-item" href="#/c/Music"><i class="fas fa-music"></i><span>Music</span></a>
+    <a class="side-item" href="#/c/Learning"><i class="far fa-lightbulb"></i><span>Learning</span></a>
+  </div>
+  <div class="side-foot">A YouTube UI clone built by Abiola for learning. Videos are thumbnails only, and nothing leaves your browser.</div>
 </nav>
 
-<!-- MOBILE MAIN CONTENT - ALL 9 VIDEOS, STARTS WITH MR BEAST -->
-<main class="mobile-content">
+<main class="main" id="main"></main>
 
-  <!-- VIDEO LIST - ALL 9 VIDEOS -->
-  <div class="video-list">
-
-    <!-- Video 1 - MrBeast (We Built America) -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/america.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=450&fit=crop'">
-        <span class="video-duration">5:20</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/mr beast profile.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">We Built America in Minecraft</div>
-          <div class="video-meta">
-            <span>MrBeast Gaming</span>
-            <i class="fas fa-check-circle verified"></i>
-          </div>
-          <div class="video-meta">11.7M views • 2 hours ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Video 2 - Royalty Family -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/real dad.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop'">
-        <span class="video-duration">5:20</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/pics.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">I Found my REAL Dad..</div>
-          <div class="video-meta">
-            <span>The Royalty Family</span>
-            <i class="fas fa-check-circle verified"></i>
-          </div>
-          <div class="video-meta">5.5M views • 1 day ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Video 3 - BR7 Football -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/ball.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&h=450&fit=crop'">
-        <span class="video-duration">8:47</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/ballers.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">The Day Ronaldo, Messi, Neymar & Mbappé Shocked The Whole World</div>
-          <div class="video-meta">
-            <span>BR7 Football</span>
-          </div>
-          <div class="video-meta">23M views • 2 years ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Video 4 - MrBeast 2 -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/behind.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=450&fit=crop'">
-        <span class="video-duration">31:05</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/beast.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">How I Made Beast Games Season 2</div>
-          <div class="video-meta">
-            <span>MrBeast 2</span>
-            <i class="fas fa-check-circle verified"></i>
-          </div>
-          <div class="video-meta">6.3M views • 3 days ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Video 5 - Total Gaming -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/ff page.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1542751110-97427bbecf20?w=800&h=450&fit=crop'">
-        <span class="video-duration">15:32</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/ff.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">COMEBACK SOLO VS SQUAD AC80 GOD LEVEL GAMEPLAY | GARENA FREE FIRE</div>
-          <div class="video-meta">
-            <span>Total Gaming</span>
-          </div>
-          <div class="video-meta">2.6M views • 3 weeks ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Video 6 - Pure O Juice -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/pure.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1514525253440-b393452e8d26?w=800&h=450&fit=crop'">
-        <span class="video-duration">4:13</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/juice.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">TANJIRO RAP (DEMON SLAYER UK DRILL) prod by @_cj_producer_</div>
-          <div class="video-meta">
-            <span>Pure O Juice</span>
-          </div>
-          <div class="video-meta">326K views • 4 weeks ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Video 7 - MrBeast -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/ex.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=450&fit=crop'">
-        <span class="video-duration">24:58</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/beast.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">Survive 30 Days Chained To Your Ex, Win $250,000</div>
-          <div class="video-meta">
-            <span>MrBeast</span>
-            <i class="fas fa-check-circle verified"></i>
-          </div>
-          <div class="video-meta">195M views • 4 months ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Video 8 - Royalty Family -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/gift.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1512474932049-78ac69ede12c?w=800&h=450&fit=crop'">
-        <span class="video-duration">12:44</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/pics.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">Opening his Dream Christmas Present</div>
-          <div class="video-meta">
-            <span>The Royalty Family</span>
-            <i class="fas fa-check-circle verified"></i>
-          </div>
-          <div class="video-meta">15M views • 4 weeks ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Video 9 - Aptech -->
-    <div class="video-item">
-      <div class="video-thumb">
-        <img src="images/tech.avif" alt="Video" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop'">
-        <span class="video-duration">5:20</span>
-      </div>
-      <div class="video-info">
-        <div class="channel-avatar">
-          <img src="images/aptech.jpg" alt="Channel" onerror="this.src='https://via.placeholder.com/36'">
-        </div>
-        <div class="video-details">
-          <div class="video-title">Success Stories from Aptech Nigeria Students</div>
-          <div class="video-meta">
-            <span>Aptech Computer Education</span>
-          </div>
-          <div class="video-meta">2K views • 1 year ago</div>
-        </div>
-        <button class="more-btn">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-    </div>
-
-  </div>
-
-</main>
-
-<!-- BOTTOM NAVIGATION -->
-<nav class="bottom-nav">
-  <a href="#" class="nav-item active">
-    <i class="fas fa-home"></i>
-    <span>Home</span>
-  </a>
-  <a href="#" class="nav-item">
-    <i class="fas fa-bolt"></i>
-    <span>Shorts</span>
-  </a>
-  <a href="#" class="nav-item">
-    <i class="fas fa-plus-circle create-icon"></i>
-    <span>Create</span>
-  </a>
-  <a href="#" class="nav-item">
-    <i class="fas fa-tv"></i>
-    <span>Subscriptions</span>
-  </a>
-  <a href="#" class="nav-item">
-    <i class="fas fa-user"></i>
-    <span>You</span>
-  </a>
+<nav class="bottom-nav" aria-label="Mobile">
+  <button data-route="#/" data-nav="home"><i class="fas fa-house"></i>Home</button>
+  <button data-route="#/shorts" data-nav="shorts"><i class="fas fa-bolt"></i>Shorts</button>
+  <button data-toast="Uploading isn't part of this demo" aria-label="Create"><i class="fas fa-circle-plus"></i></button>
+  <button data-route="#/subscriptions" data-nav="subscriptions"><i class="fas fa-tv"></i>Subscriptions</button>
+  <button data-route="#/you" data-nav="you"><i class="far fa-circle-user"></i>You</button>
 </nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-// PC Sidebar Toggle
-const pcMenuBtn = document.getElementById('pc-menu-btn');
-const pcSidebar = document.getElementById('pc-sidebar');
-const pcMain = document.getElementById('pc-main');
-let pcState = 'full';
+const CHANNELS = {
+  mbg:  { name: 'MrBeast Gaming', img: 'images/mr beast profile.jpg', subs: '49.8M', verified: true, color: '#e53935' },
+  rf:   { name: 'The Royalty Family', img: 'images/pics.jpg', subs: '23.1M', verified: true, color: '#d81b60' },
+  br7:  { name: 'BR7 Football', img: 'images/ballers.jpg', subs: '2.4M', verified: false, color: '#00897b' },
+  mb2:  { name: 'MrBeast 2', img: 'images/beast.jpg', subs: '41.2M', verified: true, color: '#e53935' },
+  mb:   { name: 'MrBeast', img: 'images/beast.jpg', subs: '398M', verified: true, color: '#e53935' },
+  tg:   { name: 'Total Gaming', img: 'images/ff.jpg', subs: '44.3M', verified: true, color: '#f57c00' },
+  poj:  { name: 'Pure O Juice', img: 'images/juice.jpg', subs: '512K', verified: false, color: '#7b1fa2' },
+  apt:  { name: 'Aptech Computer Education', img: 'images/aptech.jpg', subs: '14K', verified: false, color: '#1565c0' },
+  dev:  { name: 'Dev Stack', img: '', subs: '386K', verified: false, color: '#5e35b1' },
+};
 
-pcMenuBtn.addEventListener('click', () => {
-  if (pcState === 'full') {
-    pcState = 'collapsed';
-    pcSidebar.classList.add('collapsed');
-    pcMain.classList.add('sidebar-collapsed');
-  } else {
-    pcState = 'full';
-    pcSidebar.classList.remove('collapsed');
-    pcMain.classList.remove('sidebar-collapsed');
-  }
-});
+const VIDEOS = [
+  { id: 'america', title: 'We Built America in Minecraft', ch: 'mbg', thumb: 'images/america.avif', dur: '5:20', views: 11700000, ago: '2 hours ago', cats: ['Gaming'], desc: 'We teamed up to rebuild the whole of America block by block. Fifty states, one world, zero sleep.' },
+  { id: 'dad', title: 'I Found my REAL Dad..', ch: 'rf', thumb: 'images/real dad.avif', dur: '18:02', views: 5500000, ago: '1 day ago', cats: ['Family'], desc: 'This one is personal. Thank you for being part of the family through all of it.' },
+  { id: 'legends', title: 'The Day Ronaldo, Messi, Neymar & Mbappé Shocked The Whole World', ch: 'br7', thumb: 'images/ball.avif', dur: '8:47', views: 23000000, ago: '2 years ago', cats: ['Football'], desc: 'Four of the greatest to ever do it, and the moments nobody saw coming.' },
+  { id: 'beastgames', title: 'How I Made Beast Games Season 2', ch: 'mb2', thumb: 'images/behind.avif', dur: '31:05', views: 6300000, ago: '3 days ago', cats: ['Gaming', 'Behind the scenes'], desc: 'A look behind the curtain: the sets, the crew and the chaos of building the biggest game show yet.' },
+  { id: 'ff', title: 'COMEBACK SOLO VS SQUAD AC80 GOD LEVEL GAMEPLAY | GARENA FREE FIRE', ch: 'tg', thumb: 'images/ff page.avif', dur: '15:32', views: 2600000, ago: '3 weeks ago', cats: ['Gaming', 'Live'], desc: 'Solo vs squad with the AC80. Drop a like if you want part two.' },
+  { id: 'tanjiro', title: 'TANJIRO RAP (DEMON SLAYER UK DRILL) prod by @_cj_producer_', ch: 'poj', thumb: 'images/pure.avif', dur: '4:13', views: 326000, ago: '4 weeks ago', cats: ['Music', 'Anime'], desc: 'Water breathing, but make it drill. Lyrics in the pinned comment.' },
+  { id: 'chained', title: 'Survive 30 Days Chained To Your Ex, Win $250,000', ch: 'mb', thumb: 'images/ex.avif', dur: '24:58', views: 195000000, ago: '4 months ago', cats: ['Challenges'], desc: 'Four couples. Thirty days. One chain. Who walks away with $250,000?' },
+  { id: 'gift', title: 'Opening his Dream Christmas Present', ch: 'rf', thumb: 'images/gift.avif', dur: '12:44', views: 15000000, ago: '4 weeks ago', cats: ['Family'], desc: 'He has asked for this for three years. His reaction says it all.' },
+  { id: 'aptech', title: 'Success Stories from Aptech Nigeria Students', ch: 'apt', thumb: 'images/tech.avif', dur: '5:20', views: 2000, ago: '1 year ago', cats: ['Learning', 'Coding'], desc: 'Graduates share how they went from their first line of code to their first job in tech.' },
+  { id: 'code', title: 'Code with AI, Part 2: Building an Ecommerce Backend', ch: 'dev', thumb: 'images/code.avif', dur: '1:02:18', views: 48000, ago: '6 months ago', cats: ['Learning', 'Coding'], desc: 'We pair with AI tools to build the backend for an online store: products, carts, orders and payments, start to finish.' },
+];
 
-// PC Sidebar items
-document.querySelectorAll('.pc-sidebar .sidebar-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.pc-sidebar .sidebar-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-  });
-});
+const CHIPS = ['All', 'Gaming', 'Football', 'Music', 'Family', 'Coding', 'Anime', 'Live', 'Challenges', 'Recently uploaded', 'Watched'];
 
-// PC Chips
-document.querySelectorAll('.pc-main .chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.pc-main .chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-  });
-});
+const COMMENT_SEED = [
+  { who: 'Tobi A.', when: '2 days ago', text: 'Watched this three times already. The editing keeps getting better.' },
+  { who: 'Kemi', when: '1 week ago', text: 'Who else is here from the recommended tab?' },
+  { who: 'Daniel O.', when: '3 weeks ago', text: 'Part two please!' },
+];
 
-// Theme toggle (PC only)
-const themeBtn = document.getElementById('theme-btn');
-themeBtn.addEventListener('click', () => {
-  const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  themeBtn.innerHTML = next === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-});
-
-// Mobile Sidebar
-const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-const closeMobileSidebar = document.getElementById('close-mobile-sidebar');
-const mobileSidebar = document.getElementById('mobile-sidebar');
-const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
-
-mobileMenuBtn.addEventListener('click', () => {
-  mobileSidebar.classList.add('active');
-  mobileSidebarOverlay.classList.add('active');
-});
-
-function closeMobileMenu() {
-  mobileSidebar.classList.remove('active');
-  mobileSidebarOverlay.classList.remove('active');
+// ── State persisted in localStorage ──
+const store = {
+  get(key, fallback) { try { return JSON.parse(localStorage.getItem('yt-' + key)) ?? fallback; } catch (e) { return fallback; } },
+  set(key, val) { try { localStorage.setItem('yt-' + key, JSON.stringify(val)); } catch (e) {} },
+};
+const state = {
+  liked: new Set(store.get('liked', [])),
+  disliked: new Set(store.get('disliked', [])),
+  later: store.get('later', []),
+  history: store.get('history', []),
+  progress: store.get('progress', {}),
+  subs: new Set(store.get('subs', ['mbg', 'rf', 'br7', 'tg'])),
+  comments: store.get('comments', {}),
+  chip: 'All',
+  query: '',
+};
+function save() {
+  store.set('liked', [...state.liked]);
+  store.set('disliked', [...state.disliked]);
+  store.set('later', state.later);
+  store.set('history', state.history);
+  store.set('progress', state.progress);
+  store.set('subs', [...state.subs]);
+  store.set('comments', state.comments);
+  updateCounts();
 }
 
-closeMobileSidebar.addEventListener('click', closeMobileMenu);
-mobileSidebarOverlay.addEventListener('click', closeMobileMenu);
+// ── Helpers ──
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const byId = id => VIDEOS.find(v => v.id === id);
+function fmtViews(n) {
+  if (n >= 1e9) return +(n / 1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return +(n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return Math.round(n / 1e3) + 'K';
+  return String(n);
+}
+function toSecs(d) { return d.split(':').reduce((a, b) => a * 60 + +b, 0); }
+function fmtTime(s) {
+  s = Math.floor(s);
+  const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, sec = String(s % 60).padStart(2, '0');
+  return h ? `${h}:${String(m).padStart(2, '0')}:${sec}` : `${m}:${sec}`;
+}
+function avatar(chKey, extra = '') {
+  const c = CHANNELS[chKey];
+  const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2);
+  if (!c.img) return `<span class="ch-avatar ${extra}" style="background:${c.color}">${initials}</span>`;
+  return `<span class="ch-avatar ${extra}" style="background:${c.color}"><img src="${esc(c.img)}" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode('${initials}'))"></span>`;
+}
+function youAvatar() {
+  return `<span class="ch-avatar" style="background:#3d7cf4"><img src="images/airack.jpg" alt="" onerror="this.replaceWith(document.createTextNode('Y'))"></span>`;
+}
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
 
-// Mobile Sidebar items
-document.querySelectorAll('.mobile-sidebar .sidebar-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.mobile-sidebar .sidebar-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    closeMobileMenu();
+// ── Cards ──
+function card(v) {
+  const c = CHANNELS[v.ch];
+  const p = state.progress[v.id];
+  const inLater = state.later.includes(v.id);
+  return `
+  <article class="card" data-id="${v.id}">
+    <a class="thumb" href="#/watch/${v.id}" aria-label="${esc(v.title)}, ${v.dur}">
+      <img src="${esc(v.thumb)}" alt="" loading="lazy">
+      <span class="duration">${v.dur}</span>
+      ${p ? `<span class="watched" style="width:${Math.min(100, p * 100)}%"></span>` : ''}
+    </a>
+    <div class="hover-actions">
+      <button data-act="later" aria-label="${inLater ? 'Remove from' : 'Save to'} Watch later" title="${inLater ? 'Remove from' : 'Save to'} Watch later"><i class="fa${inLater ? 's fa-check' : 'r fa-clock'}"></i></button>
+    </div>
+    <div class="meta">
+      ${avatar(v.ch)}
+      <div class="meta-text">
+        <a href="#/watch/${v.id}"><h3 class="title">${esc(v.title)}</h3></a>
+        <div class="sub">
+          <a class="channel" href="#/channel/${v.ch}">${esc(c.name)}</a>${c.verified ? '<i class="fas fa-circle-check" aria-label="Verified"></i>' : ''}
+          <div>${fmtViews(v.views)} views &middot; ${v.ago}</div>
+        </div>
+      </div>
+      <button class="kebab" data-act="menu" aria-label="More actions" aria-haspopup="menu" aria-expanded="false"><i class="fas fa-ellipsis-vertical"></i></button>
+    </div>
+  </article>`;
+}
+
+function emptyState(icon, title, text, action) {
+  return `<div class="empty"><i class="${icon}"></i><h2>${title}</h2><p>${text}</p>${action ? `<button data-route="#/">${action}</button>` : ''}</div>`;
+}
+
+function filtered() {
+  const q = state.query.trim().toLowerCase();
+  let list = VIDEOS.filter(v => {
+    if (q && !(v.title + ' ' + CHANNELS[v.ch].name + ' ' + v.cats.join(' ')).toLowerCase().includes(q)) return false;
+    if (state.chip === 'All') return true;
+    if (state.chip === 'Watched') return state.history.includes(v.id);
+    if (state.chip === 'Recently uploaded') return /hour|day/.test(v.ago);
+    return v.cats.includes(state.chip);
   });
-});
+  return list;
+}
 
-// Mobile Chips
-document.querySelectorAll('.mobile-chips .chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.mobile-chips .chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-  });
-});
+// ── Views ──
+function renderHome() {
+  const list = filtered();
+  const chips = CHIPS.map(c => `<button class="chip ${c === state.chip ? 'active' : ''}" data-chip="${c}" aria-pressed="${c === state.chip}">${c}</button>`).join('');
+  const head = state.query ? `<div class="view-head"><h1>Results for “${esc(state.query)}”</h1><p>${list.length} video${list.length === 1 ? '' : 's'}</p></div>` : '';
+  const body = list.length
+    ? list.map(card).join('')
+    : state.query
+      ? emptyState('fas fa-magnifying-glass', 'No results', 'Try a different word, or clear the search to see everything.', 'Clear search')
+      : emptyState('fas fa-film', 'Nothing here yet', state.chip === 'Watched' ? 'Videos you watch will show up here.' : 'No videos in this category yet.', 'Show all videos');
+  $('#main').innerHTML = `<div class="chips" role="toolbar" aria-label="Filter by topic">${chips}</div>${head}<section class="grid">${body}</section><footer class="site">A YouTube UI clone built by Abiola for learning. Not affiliated with YouTube or Google.</footer>`;
+}
 
-// Bottom Nav
-document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-  item.addEventListener('click', (e) => {
+function renderList(title, ids, empty) {
+  const list = ids.map(byId).filter(Boolean);
+  $('#main').innerHTML = `<div class="view-head"><h1>${title}</h1><p>${list.length} video${list.length === 1 ? '' : 's'}</p></div>
+    <section class="grid">${list.length ? list.map(card).join('') : empty}</section>`;
+}
+
+function renderYou() {
+  const sections = [
+    ['History', state.history, '#/history'],
+    ['Watch later', state.later, '#/later'],
+    ['Liked videos', [...state.liked], '#/liked'],
+  ];
+  $('#main').innerHTML = `<div class="view-head" style="display:flex;align-items:center;gap:16px">
+      <span class="ch-avatar" style="width:72px;height:72px;background:#3d7cf4"><img src="images/airack.jpg" alt=""></span>
+      <div><h1>You</h1><p>Saved in this browser only.</p></div></div>` +
+    sections.map(([t, ids, href]) => {
+      const list = ids.map(byId).filter(Boolean).slice(0, 4);
+      return `<div class="view-head" style="display:flex;justify-content:space-between;align-items:center"><h1 style="font-size:20px">${t}</h1>${ids.length ? `<a class="pill" href="${href}">View all</a>` : ''}</div>
+        <section class="grid">${list.length ? list.map(card).join('') : `<p class="sub" style="grid-column:1/-1">Nothing yet.</p>`}</section>`;
+    }).join('');
+}
+
+function renderChannel(key) {
+  const c = CHANNELS[key];
+  if (!c) return route404();
+  const list = VIDEOS.filter(v => v.ch === key);
+  const on = state.subs.has(key);
+  $('#main').innerHTML = `<div class="view-head" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      ${avatar(key).replace('class="ch-avatar ', 'style="width:96px;height:96px;font-size:32px;background:' + c.color + '" class="ch-avatar ')}
+      <div style="flex:1;min-width:200px"><h1>${esc(c.name)} ${c.verified ? '<i class="fas fa-circle-check" style="font-size:16px;color:var(--text2)"></i>' : ''}</h1>
+      <p>${c.subs} subscribers &middot; ${list.length} video${list.length === 1 ? '' : 's'}</p></div>
+      <button class="sub-btn ${on ? 'on' : ''}" data-act="sub" data-ch="${key}">${on ? 'Subscribed' : 'Subscribe'}</button>
+    </div><section class="grid">${list.map(card).join('')}</section>`;
+}
+
+function route404() {
+  $('#main').innerHTML = `<section class="grid">${emptyState('fas fa-triangle-exclamation', "This page isn't available", 'The link may be broken, or the video may have been removed.', 'Go to Home')}</section>`;
+}
+
+// ── Watch page ──
+let player = null;
+function renderWatch(id) {
+  const v = byId(id);
+  if (!v) return route404();
+  const c = CHANNELS[v.ch];
+  state.history = [id, ...state.history.filter(x => x !== id)].slice(0, 50);
+  save();
+  const total = toSecs(v.dur);
+  const start = (state.progress[id] || 0) >= 0.98 ? 0 : (state.progress[id] || 0) * total;
+  const liked = state.liked.has(id), disliked = state.disliked.has(id);
+  const inLater = state.later.includes(id);
+  const comments = [...(state.comments[id] || []), ...COMMENT_SEED];
+  const next = VIDEOS.filter(x => x.id !== id).sort((a, b) =>
+    (b.cats.some(c => v.cats.includes(c)) - a.cats.some(c => v.cats.includes(c))) || (b.views - a.views));
+
+  $('#main').innerHTML = `
+  <div class="watch">
+    <div>
+      <div class="player" id="player">
+        <img src="${esc(v.thumb)}" alt="">
+        <button class="big-play" id="bigPlay" aria-label="Play"><i class="fas fa-play"></i></button>
+        <div class="controls">
+          <input class="scrub" id="scrub" type="range" min="0" max="${total}" step="1" value="${Math.floor(start)}" aria-label="Seek">
+          <div class="ctrl-row">
+            <button id="playBtn" aria-label="Play"><i class="fas fa-play"></i></button>
+            <button id="nextBtn" aria-label="Next video"><i class="fas fa-forward-step"></i></button>
+            <button id="muteBtn" aria-label="Mute"><i class="fas fa-volume-high"></i></button>
+            <span class="time"><span id="cur">${fmtTime(start)}</span> / ${v.dur}</span>
+            <span class="spacer"></span>
+            <button id="fsBtn" aria-label="Full screen"><i class="fas fa-expand"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="w-info">
+        <h1 class="w-title">${esc(v.title)}</h1>
+        <div class="w-row">
+          <div class="w-channel">
+            <a href="#/channel/${v.ch}">${avatar(v.ch)}</a>
+            <div><a href="#/channel/${v.ch}"><strong>${esc(c.name)}</strong></a><small>${c.subs} subscribers</small></div>
+            <button class="sub-btn ${state.subs.has(v.ch) ? 'on' : ''}" data-act="sub" data-ch="${v.ch}">${state.subs.has(v.ch) ? 'Subscribed' : 'Subscribe'}</button>
+          </div>
+          <div class="w-actions">
+            <span class="like-group">
+              <button class="pill ${liked ? 'on' : ''}" data-act="like" aria-pressed="${liked}"><i class="fa${liked ? 's' : 'r'} fa-thumbs-up"></i>${fmtViews(Math.round(v.views * 0.04) + (liked ? 1 : 0))}</button>
+              <button class="pill ${disliked ? 'on' : ''}" data-act="dislike" aria-pressed="${disliked}" aria-label="Dislike"><i class="fa${disliked ? 's' : 'r'} fa-thumbs-down"></i></button>
+            </span>
+            <button class="pill" data-act="share"><i class="fas fa-share"></i>Share</button>
+            <button class="pill ${inLater ? 'on' : ''}" data-act="later"><i class="fa${inLater ? 's fa-check' : 'r fa-clock'}"></i>${inLater ? 'Saved' : 'Save'}</button>
+          </div>
+        </div>
+        <div class="desc"><strong>${fmtViews(v.views)} views &nbsp;${v.ago}</strong> &nbsp;${v.cats.map(c => `<a href="#/c/${encodeURIComponent(c)}" style="color:var(--blue)">#${c.replace(/\s/g, '')}</a>`).join(' ')}<p>${esc(v.desc)}</p></div>
+      </div>
+      <section class="comments">
+        <h2>${comments.length} Comments</h2>
+        <form class="c-form" id="cForm">
+          ${youAvatar()}
+          <div class="c-field">
+            <label class="sr-only" for="cInput">Add a comment</label>
+            <input id="cInput" placeholder="Add a comment..." maxlength="300" autocomplete="off">
+            <div class="c-btns" hidden><button type="button" id="cCancel">Cancel</button><button class="primary" type="submit" disabled>Comment</button></div>
+          </div>
+        </form>
+        <div id="cList">${comments.map(commentHTML).join('')}</div>
+      </section>
+    </div>
+    <aside class="upnext">
+      <h2>Up next</h2>
+      ${next.map(n => `<a class="mini" href="#/watch/${n.id}">
+        <span class="thumb"><img src="${esc(n.thumb)}" alt="" loading="lazy"><span class="duration">${n.dur}</span>${state.progress[n.id] ? `<span class="watched" style="width:${Math.min(100, state.progress[n.id] * 100)}%"></span>` : ''}</span>
+        <span class="meta-text"><span class="title">${esc(n.title)}</span><span class="sub" style="display:block">${esc(CHANNELS[n.ch].name)}<br>${fmtViews(n.views)} views &middot; ${n.ago}</span></span>
+      </a>`).join('')}
+    </aside>
+  </div>`;
+  window.scrollTo(0, 0);
+  setupPlayer(v, total, start, next[0]);
+  setupComments(id);
+}
+
+function commentHTML(c) {
+  return `<div class="comment"><span class="ch-avatar" style="background:${c.mine ? '#3d7cf4' : '#78909c'}">${c.mine ? '<img src="images/airack.jpg" alt="">' : esc(c.who[0])}</span>
+    <div><b>@${esc(c.who.replace(/\s|\./g, '').toLowerCase())}<span>${esc(c.when)}</span></b><p>${esc(c.text)}</p></div></div>`;
+}
+
+function setupComments(id) {
+  const form = $('#cForm'), input = $('#cInput'), btns = $('.c-btns', form), submit = $('.primary', form);
+  input.addEventListener('focus', () => { btns.hidden = false; });
+  input.addEventListener('input', () => { submit.disabled = !input.value.trim(); });
+  $('#cCancel').addEventListener('click', () => { input.value = ''; submit.disabled = true; btns.hidden = true; });
+  form.addEventListener('submit', e => {
     e.preventDefault();
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
+    const text = input.value.trim();
+    if (!text) return;
+    const c = { who: 'You', when: 'just now', text, mine: true };
+    (state.comments[id] = state.comments[id] || []).unshift(c);
+    save();
+    $('#cList').insertAdjacentHTML('afterbegin', commentHTML(c));
+    const h = $('.comments h2'); h.textContent = (parseInt(h.textContent) + 1) + ' Comments';
+    input.value = ''; submit.disabled = true; btns.hidden = true; input.blur();
   });
-});
-</script>
+}
 
+// The "player" plays the thumbnail with a slow pan and a working timeline, since the clone ships no video files.
+function setupPlayer(v, total, start, nextVideo) {
+  stopPlayer();
+  const el = $('#player'), scrub = $('#scrub'), cur = $('#cur'), playBtn = $('#playBtn');
+  let t = start, last = 0, raf = 0, playing = false;
+  const paint = () => {
+    scrub.value = Math.floor(t);
+    scrub.style.setProperty('--p', (t / total * 100) + '%');
+    cur.textContent = fmtTime(t);
+  };
+  const persist = () => { state.progress[v.id] = t / total; save(); };
+  const tick = now => {
+    if (last) t = Math.min(total, t + (now - last) / 1000 * 8); // 8x so a demo finishes in reasonable time
+    last = now;
+    paint();
+    if (t >= total) { pause(); persist(); toast('Up next: ' + nextVideo.title.slice(0, 48)); return; }
+    raf = requestAnimationFrame(tick);
+  };
+  function play() {
+    if (t >= total) t = 0;
+    playing = true; last = 0; el.classList.add('playing');
+    playBtn.innerHTML = '<i class="fas fa-pause"></i>'; playBtn.setAttribute('aria-label', 'Pause');
+    raf = requestAnimationFrame(tick);
+  }
+  function pause() {
+    playing = false; cancelAnimationFrame(raf); el.classList.remove('playing');
+    playBtn.innerHTML = '<i class="fas fa-play"></i>'; playBtn.setAttribute('aria-label', 'Play');
+  }
+  const toggle = () => { playing ? (pause(), persist()) : play(); };
+  $('#bigPlay').addEventListener('click', toggle);
+  playBtn.addEventListener('click', toggle);
+  el.querySelector('img').addEventListener('click', toggle);
+  scrub.addEventListener('input', () => { t = +scrub.value; paint(); persist(); });
+  $('#nextBtn').addEventListener('click', () => { persist(); location.hash = '#/watch/' + nextVideo.id; });
+  $('#muteBtn').addEventListener('click', e => {
+    const b = e.currentTarget, muted = b.firstElementChild.classList.toggle('fa-volume-xmark');
+    b.firstElementChild.classList.toggle('fa-volume-high', !muted);
+    b.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
+  });
+  $('#fsBtn').addEventListener('click', () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else el.requestFullscreen?.();
+  });
+  paint();
+  player = { stop() { if (playing) { pause(); persist(); } }, toggle };
+}
+function stopPlayer() { if (player) { player.stop(); player = null; } }
+
+// ── Kebab menu ──
+let openMenu = null;
+function closeMenu() {
+  if (!openMenu) return;
+  openMenu.btn.setAttribute('aria-expanded', 'false');
+  openMenu.el.remove();
+  openMenu = null;
+}
+function showMenu(btn, id) {
+  closeMenu();
+  const inLater = state.later.includes(id);
+  const el = document.createElement('div');
+  el.className = 'menu'; el.setAttribute('role', 'menu');
+  el.innerHTML = `
+    <button role="menuitem" data-mact="later"><i class="far fa-clock"></i>${inLater ? 'Remove from' : 'Save to'} Watch later</button>
+    <button role="menuitem" data-mact="share"><i class="fas fa-share"></i>Share</button>
+    ${state.history.includes(id) ? '<button role="menuitem" data-mact="forget"><i class="fas fa-clock-rotate-left"></i>Remove from history</button>' : ''}
+    <button role="menuitem" data-mact="hide"><i class="fas fa-ban"></i>Not interested</button>`;
+  document.body.appendChild(el);
+  const r = btn.getBoundingClientRect();
+  const left = Math.min(r.right - el.offsetWidth, innerWidth - el.offsetWidth - 8);
+  const top = r.bottom + el.offsetHeight > innerHeight - 8 ? r.top - el.offsetHeight + scrollY : r.bottom + scrollY;
+  el.style.left = Math.max(8, left) + 'px'; el.style.top = top + 'px';
+  btn.setAttribute('aria-expanded', 'true');
+  openMenu = { el, btn, id };
+  el.querySelector('button').focus();
+  el.addEventListener('click', e => {
+    const b = e.target.closest('[data-mact]');
+    if (!b) return;
+    const act = b.dataset.mact;
+    if (act === 'later') toggleLater(id);
+    if (act === 'share') share(id);
+    if (act === 'forget') { state.history = state.history.filter(x => x !== id); delete state.progress[id]; save(); render(); toast('Removed from history'); }
+    if (act === 'hide') { const c = btn.closest('.card'); c.style.transition = 'opacity .2s'; c.style.opacity = '0'; setTimeout(() => c.remove(), 200); toast("Got it. We won't show this one again here"); }
+    closeMenu();
+  });
+}
+
+// ── Actions ──
+function toggleLater(id) {
+  const had = state.later.includes(id);
+  state.later = had ? state.later.filter(x => x !== id) : [id, ...state.later];
+  save();
+  toast(had ? 'Removed from Watch later' : 'Saved to Watch later');
+  render(true);
+}
+function share(id) {
+  const url = location.href.split('#')[0] + '#/watch/' + id;
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Link copied to clipboard'), () => toast(url));
+  else toast(url);
+}
+function toggleSub(ch) {
+  const on = !state.subs.has(ch);
+  on ? state.subs.add(ch) : state.subs.delete(ch);
+  save();
+  renderSubs();
+  document.querySelectorAll(`[data-act="sub"][data-ch="${ch}"]`).forEach(b => {
+    b.classList.toggle('on', on); b.textContent = on ? 'Subscribed' : 'Subscribe';
+  });
+  toast(on ? `Subscribed to ${CHANNELS[ch].name}` : 'Subscription removed');
+}
+
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (openMenu && !openMenu.el.contains(t) && !t.closest('[data-act="menu"]')) closeMenu();
+  const route = t.closest('[data-route]');
+  if (route) { location.hash = route.dataset.route; return; }
+  const tst = t.closest('[data-toast]');
+  if (tst) { toast(tst.dataset.toast); return; }
+  const chip = t.closest('[data-chip]');
+  if (chip) { state.chip = chip.dataset.chip; render(); return; }
+  const act = t.closest('[data-act]');
+  if (!act) return;
+  const cardEl = act.closest('[data-id]');
+  const id = cardEl ? cardEl.dataset.id : currentWatchId();
+  switch (act.dataset.act) {
+    case 'menu': e.preventDefault(); openMenu && openMenu.btn === act ? closeMenu() : showMenu(act, id); break;
+    case 'later': e.preventDefault(); toggleLater(id); break;
+    case 'share': share(id); break;
+    case 'sub': toggleSub(act.dataset.ch); break;
+    case 'like':
+    case 'dislike': {
+      const [mine, other] = act.dataset.act === 'like' ? [state.liked, state.disliked] : [state.disliked, state.liked];
+      const on = !mine.has(id);
+      on ? mine.add(id) : mine.delete(id);
+      other.delete(id);
+      save();
+      if (act.dataset.act === 'like') toast(on ? 'Added to Liked videos' : 'Removed from Liked videos');
+      render(true);
+      break;
+    }
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeMenu(); closeDrawer(); if (document.body.classList.contains('searching')) closeSearch(); }
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); openSearch(); }
+  if ((e.key === 'k' || e.key === ' ') && player && document.activeElement.tagName !== 'INPUT' && !document.activeElement.closest('button, a')) { e.preventDefault(); player.toggle(); }
+});
+addEventListener('resize', closeMenu);
+addEventListener('scroll', closeMenu, { passive: true });
+
+// ── Search ──
+const searchInput = $('#searchInput'), searchBox = $('#searchBox');
+function openSearch() { document.body.classList.add('searching'); searchInput.focus(); }
+function closeSearch() { document.body.classList.remove('searching'); }
+$('#mobileSearch').addEventListener('click', openSearch);
+$('#searchBack').addEventListener('click', closeSearch);
+searchInput.addEventListener('input', () => {
+  searchBox.classList.toggle('has-text', !!searchInput.value);
+  if (currentRoute() === 'home') { state.query = searchInput.value; renderHome(); }
+});
+$('#searchClear').addEventListener('click', () => {
+  searchInput.value = ''; searchBox.classList.remove('has-text'); state.query = ''; searchInput.focus();
+  if (currentRoute() === 'home') renderHome();
+});
+$('#searchForm').addEventListener('submit', e => {
+  e.preventDefault();
+  state.query = searchInput.value;
+  state.chip = 'All';
+  searchInput.blur();
+  closeSearch();
+  if (location.hash === '' || location.hash === '#/') render(); else location.hash = '#/';
+});
+$('#micBtn').addEventListener('click', () => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return toast("Voice search isn't supported in this browser");
+  const r = new SR();
+  r.lang = 'en-US';
+  toast('Listening…');
+  r.onresult = ev => { searchInput.value = ev.results[0][0].transcript; searchBox.classList.add('has-text'); $('#searchForm').requestSubmit(); };
+  r.onerror = () => toast("Didn't catch that. Try again");
+  r.start();
+});
+
+// ── Theme ──
+const themeBtn = $('#themeBtn');
+function paintThemeBtn() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  themeBtn.innerHTML = `<i class="fas fa-${dark ? 'sun' : 'moon'}"></i>`;
+  themeBtn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+}
+themeBtn.addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  store.set('theme', next); try { localStorage.setItem('yt-theme', next); } catch (e) {}
+  paintThemeBtn();
+});
+paintThemeBtn();
+
+// ── Sidebar / drawer ──
+const isDrawer = () => matchMedia('(max-width: 1023px)').matches;
+function closeDrawer() { document.body.classList.remove('drawer'); }
+$('#menuBtn').addEventListener('click', () => {
+  if (isDrawer()) document.body.classList.add('drawer');
+  else { document.body.classList.toggle('rail'); store.set('rail', document.body.classList.contains('rail')); }
+});
+$('#drawerClose').addEventListener('click', closeDrawer);
+$('#scrim').addEventListener('click', closeDrawer);
+$('#sidebar').addEventListener('click', e => { if (e.target.closest('a') && isDrawer()) closeDrawer(); });
+if (store.get('rail', false)) document.body.classList.add('rail');
+
+function renderSubs() {
+  const keys = Object.keys(CHANNELS).filter(k => state.subs.has(k));
+  $('#subList').innerHTML = keys.length
+    ? keys.map(k => `<a class="side-item" href="#/channel/${k}">${CHANNELS[k].img ? `<img src="${esc(CHANNELS[k].img)}" alt="" onerror="this.style.visibility='hidden'">` : `<span class="ch-avatar" style="width:24px;height:24px;font-size:10px;background:${CHANNELS[k].color}">${CHANNELS[k].name[0]}</span>`}<span>${esc(CHANNELS[k].name)}</span></a>`).join('')
+    : '<p class="sub" style="padding:0 12px">Subscribe to channels to see them here.</p>';
+}
+function updateCounts() {
+  const counts = { history: state.history.length, later: state.later.length, liked: state.liked.size };
+  document.querySelectorAll('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count] || ''; });
+}
+
+// ── Router ──
+function currentRoute() { return (location.hash.replace(/^#\/?/, '').split('/')[0]) || 'home'; }
+function currentWatchId() { const m = location.hash.match(/^#\/watch\/(.+)/); return m && m[1]; }
+function render(keepScroll) {
+  const y = scrollY;
+  stopPlayerIfLeaving();
+  const parts = location.hash.replace(/^#\/?/, '').split('/');
+  const r = parts[0] || 'home';
+  document.querySelectorAll('[data-nav]').forEach(el => el.classList.toggle('active', el.dataset.nav === r));
+  if (r === 'home') renderHome();
+  else if (r === 'watch') { if (keepScroll && player) return refreshWatchBits(parts[1]); renderWatch(parts[1]); return; }
+  else if (r === 'later') renderList('Watch later', state.later, emptyState('far fa-clock', 'No videos saved', 'Tap the clock on any video to watch it later.', 'Browse videos'));
+  else if (r === 'liked') renderList('Liked videos', [...state.liked], emptyState('far fa-thumbs-up', 'No liked videos', 'Videos you like will show up here.', 'Browse videos'));
+  else if (r === 'history') renderList('Watch history', state.history, emptyState('fas fa-clock-rotate-left', 'No watch history', 'Videos you watch will show up here.', 'Browse videos'));
+  else if (r === 'subscriptions') renderList('Subscriptions', VIDEOS.filter(v => state.subs.has(v.ch)).map(v => v.id), emptyState('fas fa-tv', 'No subscriptions', 'Subscribe to a channel to see its videos here.', 'Browse videos'));
+  else if (r === 'shorts') renderList('Shorts', VIDEOS.filter(v => toSecs(v.dur) < 360).map(v => v.id), '');
+  else if (r === 'you') renderYou();
+  else if (r === 'channel') renderChannel(parts[1]);
+  else if (r === 'c') { state.chip = decodeURIComponent(parts[1] || 'All'); state.query = ''; renderHome(); }
+  else route404();
+  if (keepScroll) scrollTo(0, y);
+}
+// On the watch page, refresh only the action buttons so playback isn't interrupted.
+function refreshWatchBits(id) {
+  const v = byId(id), liked = state.liked.has(id), disliked = state.disliked.has(id), inLater = state.later.includes(id);
+  const likeBtn = $('[data-act="like"]'), disBtn = $('[data-act="dislike"]'), laterBtn = $('.w-actions [data-act="later"]');
+  likeBtn.classList.toggle('on', liked); likeBtn.setAttribute('aria-pressed', liked);
+  likeBtn.innerHTML = `<i class="fa${liked ? 's' : 'r'} fa-thumbs-up"></i>${fmtViews(Math.round(v.views * 0.04) + (liked ? 1 : 0))}`;
+  disBtn.classList.toggle('on', disliked); disBtn.setAttribute('aria-pressed', disliked);
+  disBtn.innerHTML = `<i class="fa${disliked ? 's' : 'r'} fa-thumbs-down"></i>`;
+  laterBtn.classList.toggle('on', inLater);
+  laterBtn.innerHTML = `<i class="fa${inLater ? 's fa-check' : 'r fa-clock'}"></i>${inLater ? 'Saved' : 'Save'}`;
+}
+function stopPlayerIfLeaving() { if (player && !currentWatchId()) stopPlayer(); }
+addEventListener('hashchange', () => { closeMenu(); stopPlayer(); render(); if (!currentWatchId()) scrollTo(0, 0); });
+
+renderSubs();
+updateCounts();
+render();
+</script>
 </body>
 </html>
